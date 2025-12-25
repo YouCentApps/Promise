@@ -1,13 +1,50 @@
 using Promise.Api;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Microsoft.AspNetCore.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        // Initialize components and security schemes if null
+        document.Components ??= new();
+        document.Components.SecuritySchemes ??= new Dictionary<string, Microsoft.OpenApi.IOpenApiSecurityScheme>();
+        
+        // Add Bearer token security scheme
+        var bearerScheme = new Microsoft.OpenApi.OpenApiSecurityScheme();
+        bearerScheme.Type = Microsoft.OpenApi.SecuritySchemeType.Http;
+        bearerScheme.Scheme = "bearer";
+        bearerScheme.BearerFormat = "JWT";
+        bearerScheme.Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"";
+        
+        document.Components.SecuritySchemes["Bearer"] = bearerScheme;
+
+        // Create security requirement reference
+        var securitySchemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("Bearer", document);
+        
+        var securityRequirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
+        securityRequirement.Add(securitySchemeRef, new List<string>());
+
+        // Apply to all operations
+        foreach (var pathItem in document.Paths.Values)
+        {
+            foreach (var operation in pathItem.Operations.Values)
+            {
+                // Initialize Security collection if null
+                operation.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+                operation.Security.Add(securityRequirement);
+            }
+        }
+
+        return Task.CompletedTask;
+    });
+});
 
 // Add DbContext to the DI container
 var configuration = builder.Configuration;

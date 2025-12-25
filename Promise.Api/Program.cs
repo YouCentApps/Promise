@@ -1,6 +1,7 @@
 using Promise.Api;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Microsoft.AspNetCore.OpenApi;
 
 
 var builder = WebApplication.CreateBuilder(args);

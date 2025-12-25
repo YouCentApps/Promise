@@ -5,6 +5,19 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Helper method to add request body descriptions
+static Func<Microsoft.OpenApi.OpenApiOperation, OpenApiOperationTransformerContext, CancellationToken, Task> CreateRequestBodyDescriptionTransformer(string description)
+{
+    return (operation, context, ct) =>
+    {
+        if (operation.RequestBody != null)
+        {
+            operation.RequestBody.Description = description;
+        }
+        return Task.CompletedTask;
+    };
+}
+
 // Add services to the container.
 // Learn more about configuring OpenAPI with ASP.NET Core and Scalar at https://aka.ms/aspnetcore/openapi
 builder.Services.AddEndpointsApiExplorer();
@@ -94,7 +107,8 @@ app.MapPost("/signin", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("SignIn")
 .WithSummary("Sign in user")
-.WithDescription("Authenticates a user and returns a JWT token.");
+.WithDescription("Authenticates a user and returns a JWT token.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials for authentication"));
 
 // SignUp endpoint
 app.MapPost("/signup", async (HttpContext context) =>
@@ -104,7 +118,8 @@ app.MapPost("/signup", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("SignUp")
 .WithSummary("Register new user")
-.WithDescription("Creates a new user account.");
+.WithDescription("Creates a new user account.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User information for account registration"));
 
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
@@ -116,7 +131,8 @@ app.MapPost("/userinfo", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("GetUserInfo")
 .WithSummary("Get user information")
-.WithDescription("Retrieves user information including balance and promise limit. Requires authentication.");
+.WithDescription("Retrieves user information including balance and promise limit. Requires authentication.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials to retrieve account information"));
 
 // DataUpdate endpoint
 app.MapPut("/dataupdate", async (HttpContext context) =>
@@ -126,7 +142,8 @@ app.MapPut("/dataupdate", async (HttpContext context) =>
 .Accepts<UserData>("application/json")
 .WithName("UpdateUserData")
 .WithSummary("Update user personal data")
-.WithDescription("Updates user's personal information.");
+.WithDescription("Updates user's personal information.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Updated user personal information data"));
 
 // DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
@@ -138,7 +155,8 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("DeleteUser")
 .WithSummary("Delete user account")
-.WithDescription("Permanently deletes a user account. Requires authentication.");
+.WithDescription("Permanently deletes a user account. Requires authentication.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials for account deletion"));
 
 // UpdatePassword endpoint
 app.MapPut("/updatepassword", async (HttpContext context) =>
@@ -150,7 +168,8 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
 .Accepts<UserUpdate>("application/json")
 .WithName("UpdatePassword")
 .WithSummary("Update user password")
-.WithDescription("Changes the user's password. Requires authentication.");
+.WithDescription("Changes the user's password. Requires authentication.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and new password information"));
 
 // SendPromises endpoint
 app.MapPost("/sendpromises", async (HttpContext context) =>
@@ -162,7 +181,8 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
 .Accepts<UserTransaction>("application/json")
 .WithName("SendPromises")
 .WithSummary("Send promises to another user")
-.WithDescription("Transfers YouCent Promises (YCP) from one user to another. Requires authentication.");
+.WithDescription("Transfers YouCent Promises (YCP) from one user to another. Requires authentication.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Transaction details including recipient and amount"));
 
 // GetTransactions endpoint
 app.MapPost("/gettransactions", async (HttpContext context) =>
@@ -174,7 +194,8 @@ app.MapPost("/gettransactions", async (HttpContext context) =>
 .Accepts<TransactionsHistoryInfo>("application/json")
 .WithName("GetTransactions")
 .WithSummary("Get transaction history")
-.WithDescription("Retrieves the user's transaction history. Requires authentication.");
+.WithDescription("Retrieves the user's transaction history. Requires authentication.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and transaction history query parameters"));
 
 // RestoreAccessUseSecret endpoint
 app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
@@ -184,7 +205,8 @@ app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithSecret")
 .WithSummary("Restore access using secret word")
-.WithDescription("Restores account access by verifying the user's secret word.");
+.WithDescription("Restores account access by verifying the user's secret word.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User identifier and secret word for account recovery"));
 
 // RestoreAccessUseEmail endpoint
 app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
@@ -194,7 +216,8 @@ app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithEmail")
 .WithSummary("Restore access using email")
-.WithDescription("Restores account access by sending a verification email.");
+.WithDescription("Restores account access by sending a verification email.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User email address for account recovery"));
 
 // RestoreAccessUseTel endpoint
 app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
@@ -204,7 +227,8 @@ app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithPhone")
 .WithSummary("Restore access using phone number")
-.WithDescription("Restores account access by verifying the user's phone number.");
+.WithDescription("Restores account access by verifying the user's phone number.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User phone number for account recovery"));
 
 // RUN!
 app.Run();

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring OpenAPI with ASP.NET Core and Scalar at https://aka.ms/aspnetcore/openapi
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi(options =>
 {

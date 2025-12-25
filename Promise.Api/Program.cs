@@ -25,8 +25,15 @@ builder.Services.AddOpenApi(options =>
         
         document.Components.SecuritySchemes["Bearer"] = bearerScheme;
 
-        // Create security requirement reference
-        var securitySchemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("Bearer", document);
+        // Create security requirement using a referenced security scheme
+        var securitySchemeRef = new Microsoft.OpenApi.OpenApiSecurityScheme
+        {
+            Reference = new Microsoft.OpenApi.OpenApiReference
+            {
+                Type = Microsoft.OpenApi.ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        };
         
         var securityRequirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
         securityRequirement.Add(securitySchemeRef, new List<string>());

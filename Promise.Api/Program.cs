@@ -1,5 +1,6 @@
 using Promise.Api;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options
+            .WithTitle("YouCent Promise API")
+            .WithTheme(ScalarTheme.Purple)
+            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    });
 }
 else
 {
@@ -34,45 +42,53 @@ app.MapGet("/minversup", () =>
 {
     return new { major = 2, minor = 0, build = 10 };
 })
-.WithOpenApi();
+.WithName("GetMinimumVersion")
+.WithSummary("Check minimum supported app version")
+.WithDescription("Returns the minimum version of the mobile app that is currently supported.");
 
 // SignIn endpoint
 app.MapPost("/signin", async (HttpContext context) =>
 {
-    //var secret = configuration["Jwt:Secret"];
 #pragma warning disable CS0612 // Type or member is obsolete
     return await SignIn.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
-.Accepts<User>("application/json", "User data for Sign In")
-.WithOpenApi();
+.Accepts<User>("application/json")
+.WithName("SignIn")
+.WithSummary("Sign in user")
+.WithDescription("Authenticates a user and returns a JWT token.");
 
 // SignUp endpoint
 app.MapPost("/signup", async (HttpContext context) =>
 {
     return await SignUp.Run(context);
 })
-.Accepts<User>("application/json", "User data for Sign Up")
-.WithOpenApi();
+.Accepts<User>("application/json")
+.WithName("SignUp")
+.WithSummary("Register new user")
+.WithDescription("Creates a new user account.");
 
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
-    //var secret = configuration["Jwt:Secret"];
 #pragma warning disable CS0612 // Type or member is obsolete
     return await UserInfo.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
-.Accepts<User>("application/json", "User data for User Info")
-.WithOpenApi();
+.Accepts<User>("application/json")
+.WithName("GetUserInfo")
+.WithSummary("Get user information")
+.WithDescription("Retrieves user information including balance and promise limit. Requires authentication.");
 
 // DataUpdate endpoint
 app.MapPut("/dataupdate", async (HttpContext context) =>
 {
     return await DataUpdate.Run(context);
 })
-.Accepts<UserData>("application/json", "User data for Data Update")
-.WithOpenApi();
+.Accepts<UserData>("application/json")
+.WithName("UpdateUserData")
+.WithSummary("Update user personal data")
+.WithDescription("Updates user's personal information.");
 
 // DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
@@ -81,8 +97,10 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
     return await DeleteUser.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
-.Accepts<User>("application/json", "User data for Delete User")
-.WithOpenApi();
+.Accepts<User>("application/json")
+.WithName("DeleteUser")
+.WithSummary("Delete user account")
+.WithDescription("Permanently deletes a user account. Requires authentication.");
 
 // UpdatePassword endpoint
 app.MapPut("/updatepassword", async (HttpContext context) =>
@@ -91,8 +109,10 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
     return await UpdatePassword.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
-.Accepts<UserUpdate>("application/json", "User data for Update Password")
-.WithOpenApi();
+.Accepts<UserUpdate>("application/json")
+.WithName("UpdatePassword")
+.WithSummary("Update user password")
+.WithDescription("Changes the user's password. Requires authentication.");
 
 // SendPromises endpoint
 app.MapPost("/sendpromises", async (HttpContext context) =>
@@ -101,8 +121,10 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
     return await SendPromises.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
-.Accepts<UserTransaction>("application/json", "User data for Send Promises")
-.WithOpenApi();
+.Accepts<UserTransaction>("application/json")
+.WithName("SendPromises")
+.WithSummary("Send promises to another user")
+.WithDescription("Transfers YouCent Promises (YCP) from one user to another. Requires authentication.");
 
 // GetTransactions endpoint
 app.MapPost("/gettransactions", async (HttpContext context) =>
@@ -111,33 +133,40 @@ app.MapPost("/gettransactions", async (HttpContext context) =>
     return await GetTransactions.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
-.Accepts<TransactionsHistoryInfo>("application/json", "Info info Get Transactions")
-.WithOpenApi();
+.Accepts<TransactionsHistoryInfo>("application/json")
+.WithName("GetTransactions")
+.WithSummary("Get transaction history")
+.WithDescription("Retrieves the user's transaction history. Requires authentication.");
 
 // RestoreAccessUseSecret endpoint
 app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
 {
     return await RestoreAccessUseSecret.Run(context);
 })
-.Accepts<RestoreAccessInfo>("application/json", "Data for restoring access using secret word")
-.WithOpenApi();
+.Accepts<RestoreAccessInfo>("application/json")
+.WithName("RestoreAccessWithSecret")
+.WithSummary("Restore access using secret word")
+.WithDescription("Restores account access by verifying the user's secret word.");
 
 // RestoreAccessUseEmail endpoint
 app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
 {
     return await RestoreAccessUseEmail.Run(context);
 })
-.Accepts<RestoreAccessInfo>("application/json", "Data for restoring access using email")
-.WithOpenApi();
+.Accepts<RestoreAccessInfo>("application/json")
+.WithName("RestoreAccessWithEmail")
+.WithSummary("Restore access using email")
+.WithDescription("Restores account access by sending a verification email.");
 
 // RestoreAccessUseTel endpoint
 app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
 {
     return await RestoreAccessUseTel.Run(context);
 })
-.Accepts<RestoreAccessInfo>("application/json", "Data for restoring access using telephone number")
-.WithOpenApi();
-
+.Accepts<RestoreAccessInfo>("application/json")
+.WithName("RestoreAccessWithPhone")
+.WithSummary("Restore access using phone number")
+.WithDescription("Restores account access by verifying the user's phone number.");
 
 // RUN!
 app.Run();

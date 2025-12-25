@@ -93,7 +93,15 @@ app.MapPost("/signin", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("SignIn")
 .WithSummary("Sign in user")
-.WithDescription("Authenticates a user and returns a JWT token.");
+.WithDescription("Authenticates a user and returns a JWT token.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User credentials for authentication";
+    }
+    return Task.CompletedTask;
+});
 
 // SignUp endpoint
 app.MapPost("/signup", async (HttpContext context) =>
@@ -103,7 +111,15 @@ app.MapPost("/signup", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("SignUp")
 .WithSummary("Register new user")
-.WithDescription("Creates a new user account.");
+.WithDescription("Creates a new user account.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User information for account registration";
+    }
+    return Task.CompletedTask;
+});
 
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
@@ -115,7 +131,15 @@ app.MapPost("/userinfo", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("GetUserInfo")
 .WithSummary("Get user information")
-.WithDescription("Retrieves user information including balance and promise limit. Requires authentication.");
+.WithDescription("Retrieves user information including balance and promise limit. Requires authentication.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User credentials to retrieve account information";
+    }
+    return Task.CompletedTask;
+});
 
 // DataUpdate endpoint
 app.MapPut("/dataupdate", async (HttpContext context) =>
@@ -125,7 +149,15 @@ app.MapPut("/dataupdate", async (HttpContext context) =>
 .Accepts<UserData>("application/json")
 .WithName("UpdateUserData")
 .WithSummary("Update user personal data")
-.WithDescription("Updates user's personal information.");
+.WithDescription("Updates user's personal information.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "Updated user personal information data";
+    }
+    return Task.CompletedTask;
+});
 
 // DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
@@ -137,7 +169,15 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("DeleteUser")
 .WithSummary("Delete user account")
-.WithDescription("Permanently deletes a user account. Requires authentication.");
+.WithDescription("Permanently deletes a user account. Requires authentication.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User credentials for account deletion";
+    }
+    return Task.CompletedTask;
+});
 
 // UpdatePassword endpoint
 app.MapPut("/updatepassword", async (HttpContext context) =>
@@ -149,7 +189,15 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
 .Accepts<UserUpdate>("application/json")
 .WithName("UpdatePassword")
 .WithSummary("Update user password")
-.WithDescription("Changes the user's password. Requires authentication.");
+.WithDescription("Changes the user's password. Requires authentication.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User credentials and new password information";
+    }
+    return Task.CompletedTask;
+});
 
 // SendPromises endpoint
 app.MapPost("/sendpromises", async (HttpContext context) =>
@@ -161,7 +209,15 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
 .Accepts<UserTransaction>("application/json")
 .WithName("SendPromises")
 .WithSummary("Send promises to another user")
-.WithDescription("Transfers YouCent Promises (YCP) from one user to another. Requires authentication.");
+.WithDescription("Transfers YouCent Promises (YCP) from one user to another. Requires authentication.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "Transaction details including recipient and amount";
+    }
+    return Task.CompletedTask;
+});
 
 // GetTransactions endpoint
 app.MapPost("/gettransactions", async (HttpContext context) =>
@@ -173,7 +229,15 @@ app.MapPost("/gettransactions", async (HttpContext context) =>
 .Accepts<TransactionsHistoryInfo>("application/json")
 .WithName("GetTransactions")
 .WithSummary("Get transaction history")
-.WithDescription("Retrieves the user's transaction history. Requires authentication.");
+.WithDescription("Retrieves the user's transaction history. Requires authentication.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User credentials and transaction history query parameters";
+    }
+    return Task.CompletedTask;
+});
 
 // RestoreAccessUseSecret endpoint
 app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
@@ -183,7 +247,15 @@ app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithSecret")
 .WithSummary("Restore access using secret word")
-.WithDescription("Restores account access by verifying the user's secret word.");
+.WithDescription("Restores account access by verifying the user's secret word.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User identifier and secret word for account recovery";
+    }
+    return Task.CompletedTask;
+});
 
 // RestoreAccessUseEmail endpoint
 app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
@@ -193,7 +265,15 @@ app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithEmail")
 .WithSummary("Restore access using email")
-.WithDescription("Restores account access by sending a verification email.");
+.WithDescription("Restores account access by sending a verification email.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User email address for account recovery";
+    }
+    return Task.CompletedTask;
+});
 
 // RestoreAccessUseTel endpoint
 app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
@@ -203,7 +283,15 @@ app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithPhone")
 .WithSummary("Restore access using phone number")
-.WithDescription("Restores account access by verifying the user's phone number.");
+.WithDescription("Restores account access by verifying the user's phone number.")
+.AddOpenApiOperationTransformer((operation, context, ct) =>
+{
+    if (operation.RequestBody != null)
+    {
+        operation.RequestBody.Description = "User phone number for account recovery";
+    }
+    return Task.CompletedTask;
+});
 
 // RUN!
 app.Run();

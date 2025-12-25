@@ -1,7 +1,7 @@
 using Promise.Api;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using Microsoft.AspNetCore.OpenApi;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,17 +26,11 @@ builder.Services.AddOpenApi(options =>
         document.Components.SecuritySchemes["Bearer"] = bearerScheme;
 
         // Create security requirement using a referenced security scheme
-        var securitySchemeRef = new Microsoft.OpenApi.OpenApiSecurityScheme
-        {
-            Reference = new Microsoft.OpenApi.OpenApiReference
-            {
-                Type = Microsoft.OpenApi.ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            }
-        };
-        
+        var securitySchemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("Bearer", document);
+
         var securityRequirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
         securityRequirement.Add(securitySchemeRef, new List<string>());
+
 
         // Apply to all operations
         foreach (var pathItem in document.Paths.Values)

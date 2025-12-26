@@ -7,13 +7,13 @@
   xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
   IgnorableNamespaces="uap rescap uap18">
 
-  <Identity Name="51862ArkFen.YouCent" Publisher="CN=YouCent" Version="2.0.3.0" />
+  <Identity Name="ArkadyFenev.YouCentApp" Publisher="CN=YouCent" Version="2.0.11.0" />
 
   <mp:PhoneIdentity PhoneProductId="255bbc26-5696-4771-8aba-ce424152e228" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>YouCent</DisplayName>
-    <PublisherDisplayName>Ark Fen</PublisherDisplayName>
+    <DisplayName>YouCent App</DisplayName>
+    <PublisherDisplayName>Arkady Fenev</PublisherDisplayName>
     <Logo>$placeholder$.png</Logo>
   </Properties>
 
@@ -29,7 +29,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="YouCent"
+        DisplayName="YouCent App"
         Description="$placeholder$"
         Square150x150Logo="$placeholder$.png"
         Square44x44Logo="$placeholder$.png"

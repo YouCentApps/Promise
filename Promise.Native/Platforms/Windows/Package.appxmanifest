@@ -7,7 +7,7 @@
   xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
   IgnorableNamespaces="uap rescap uap18">
 
-  <Identity Name="ArkadyFenev.YouCentApp" Publisher="CN=YouCent" Version="2.0.11.0" />
+  <Identity Name="ArkadyFenev.YouCentApp" Publisher="CN=4F5A9A46-AD65-453B-84E4-455CCAEA8E4E" Version="2.0.11.0" />
 
   <mp:PhoneIdentity PhoneProductId="255bbc26-5696-4771-8aba-ce424152e228" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

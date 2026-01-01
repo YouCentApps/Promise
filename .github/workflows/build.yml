@@ -1,5 +1,5 @@
 # .github/workflows/build.yml
-name: Build MyMauiBlazorApp for iOS
+name: Build MyMauiBlazorApp for iOS v1
 
 on:
   push:

@@ -22,7 +22,7 @@ jobs:
         run: dotnet workload install maui
 
       - name: Restore NuGet packages
-        run: dotnet restore ./MyMauiBlazorApp/MyMauiBlazorApp.sln
+        run: dotnet restore ./Promise.sln
 
       - name: Publish MAUI iOS App
-        run: dotnet publish ./MyMauiBlazorApp/MyMauiBlazorApp.csproj -c Release -f net10.0-ios /p:RuntimeIdentifier=ios-arm64
+        run: dotnet publish ./Promise.Native/Promise.Native.csproj -c Release -f net10.0-ios /p:RuntimeIdentifier=ios-arm64

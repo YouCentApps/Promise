@@ -12,38 +12,54 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-10 offset-md-1">
-            <h1>Welcome to YouCent Promise 2.0</h1>
+        <div class="col-xl-8 col-lg-10 col-md-12">
+            <h1>Welcome to YouCent Promise App</h1>
 
             @if (isSignedIn)
             {
-                <br>
-                <h2>You signed in as <b>@username</b></h2>
-                <p>When you want someone to send you YouCent Promises (YCP), simply share your username above. It doesn't matter if
-                    you use capital letters or not.</p>
+                <div class="alert alert-success mt-3" role="alert">
+                    <h4 class="alert-heading">👋 Signed in as <strong>@username</strong></h4>
+                    <p class="mb-0"><small>Share your username with others to receive YouCent Promises (YCP). Case doesn't matter!</small></p>
+                </div>
 
-                <h2>Some important information</h2>
-                <h3>YouCent Promises (YCP) are not real money</h3>
-                <p>They are just promises you can get from others by selling them goods and services in order to buy things using
-                    them in the future, and vice versa.</p>
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">💰 Your Balance</h6>
+                                <h2 class="card-title text-primary">@balance YCP</h2>
+                                <p class="card-text"><small>Increases when you receive, decreases when you send</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">🎯 Promise Limit</h6>
+                                <h2 class="card-title text-success">@limit YCP</h2>
+                                <p class="card-text"><small>You can go negative up to this amount</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">✨ Available to Send</h6>
+                                <h2 class="card-title text-info">@(limit + balance) YCP</h2>
+                                <p class="card-text"><small>Maximum you can promise right now</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <h3>Your Balance: @balance YCP</h3>
-                <p>When you promise someone else, your balance will decrease. When someone promises you, your balance will increase.
-                </p>
-
-                <h3>Your Promise Limit: @limit YCP</h3>
-                <p>You can promise up to this amount even when your balance is equal to zero. When you do it your balance become
-                    negative for some time.</p>
-
-                <h3>You can promise up to @(limit + balance) YCP</h3>
-                <p>This is maximum amount you can promise at the moment. It is the sum of your balance and limit.</p>
+                <div class="alert alert-info mt-3" role="alert">
+                    <strong>💡 Quick Info:</strong> YCP are digital promises, not real money. Exchange goods & services with your community. Keep your balance near zero by giving as much as you receive!
+                </div>
 
                 @if (userInforError is not null)
                 {
-                    <br><br>
-                    <div class="alert alert-danger" role="alert">@userInforError</div>
+                    <div class="alert alert-danger mt-3" role="alert">@userInforError</div>
                 }
-
             }
         </div>
     </div>
@@ -52,7 +68,7 @@
 
 <div class="container">
 <div class="row">
-    <div class="col-md-10 offset-md-1">
+        <div class="col-xl-8 col-lg-10 col-md-12">
         <br><br>
         <img src="_content/Promise.Comp/images/youcent-logo-brand.png" alt="YouCent logo" class="img-fluid" />
         <br><br>
@@ -69,14 +85,14 @@
 <br><br>
 <div class="container">
     <div class="row">
-        <div class="col-md-10 offset-md-1">
+        <div class="col-xl-8 col-lg-10 col-md-12">
             <h2>💪 Join the Movement!</h2>
             <p><strong>YouCent runs on passion, not profit.</strong> Built by volunteers who believe in community-powered exchange. No investors. No corporate agenda. Just real people creating real change. 🌍</p>
             <p>🎯 <strong>Your support fuels our mission:</strong> Cover infrastructure, reward dedicated volunteers, and scale this tool worldwide. Every contribution brings us closer to sustainability.</p>
             <p class="text-center" style="font-size: 1.2em; margin-top: 20px;">
                 <strong>❤️ Support Us Now:</strong><br>
                 <a href="https://patreon.com/youcent" target="_blank" class="btn btn-primary btn-lg m-2">🎁 Become a Patron</a>
-                <a href="https://paypal.me/youcentapp" target="_blank" class="btn btn-success btn-lg m-2">💰 Donate via PayPal</a>
+                <a href="https://paypal.me/youcentapp" target="_blank" class="btn btn-primary btn-lg m-2">💰 Donate via PayPal</a>
             </p>
             <p class="text-center"><em>Together, we're building the future of community exchange. Be part of it! 🚀</em></p>
         </div>
@@ -87,7 +103,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-10 offset-md-1">
+        <div class="col-xl-8 col-lg-10 col-md-12">
             <h2>📬 Get in Touch</h2>
             <p style="font-size: 1.1em;">
                 📧 <strong>Email:</strong> <a href="mailto:arkfen@youcent.app">arkfen@youcent.app</a><br>

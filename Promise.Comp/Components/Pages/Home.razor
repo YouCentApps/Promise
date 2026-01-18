@@ -3,6 +3,7 @@
 @using System.Text
 @using System.Text.Json
 @using System.Net
+@using Promise.Comp.Components.Shared
 @inject AppState appState
 @inject NavigationManager navigationManager
 @inject IMyEnvironment myEnvironment
@@ -41,23 +42,18 @@
     }
 
 }
-<br><br>
-<img src="_content/Promise.Comp/images/youcent-logo-brand.png" alt="YouCent logo" class="img-fluid" />
-<br><br>
+
 <div class="container">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h2>What is it all about?</h2>
-            <p>YouCent is a fun and easy to understand FinTech project! Here you buy and sell using promises instead of money. We call them YouCent Promises (YCP).</p>
-            <p>You are simply making promises instead of spending money. Then you pay back by providing services or goods back to community and get your promised cents back the same way!</p>
-            <p>In fact, these cents are even more real than money because every product and service is produced by people like you. Therefore, you create your cents by promising and keeping your promises of course ;)</p>
-            <p>Good and honest people should be always trusted with promising something to be produced or done in future in return of getting something here and now. YouCent helps these people to track those mutual promises (aka "I Owe You Documents") as digital transactions. We try our best to follow the laws regarding IOU documents exchange by facilitating secure ledger to track the records.</p>
-            <p>No currency (including crypto, fiat or any other form) is needed or used in the system to buy or sell YouCent Promises. YouCent is closed nonmonetary project. The virtual exchange rate of YouCent Promise is fixed and equals 100 YCP for 1 USD now. Even though YouCent does not trade Promises for money if the law of the country the YouCent user resides in, does not prohibit to buy, or sell IOU documents, then the users can sell or buy YouCent Promises as they wish.</p>
-            <p>Still YouCent does not recommend exchanging promises for money. The exchange rate only helps to evaluate prices in money equivalent. However, if you still decide to sell or buy YCP, then we recommend sticking to this fixed rate of 100 YCP = 1 USD in any circumstances.</p>
-            <p>YouCent does not charge for transactions or any other interactions with our apps and services. The only cost of using YouCent could be is an optional annual fee of any amount you choose. By doing this user gets the specific Promise Limit which makes it possible to send Promises even with zero or negative balance. Those fees also play a role of simple, yet robust anti-fraud mechanism.</p>
-            <p>For those users who only plan to spend Promises they already received from others, the YouCent system is always free to use.</p>
-            <p>We don't want to give a chance for some dishonest people to misuse YouCent by only spending and never give anything back to community. Therefore, every user's goal should be to keep their balance as close to zero as possible at any given time.</p>
-            <p>Our mission is to help people exchange great goods and services - not to "make money" or worse to make debts which they never pay back. Please respect each other and welcome aboard!</p>
+            <br><br>
+            <img src="_content/Promise.Comp/images/youcent-logo-brand.png" alt="YouCent logo" class="img-fluid" />
+            <br><br>
+            <h2>🚀 What is YouCent?</h2>
+            <p><strong>Trade with promises, not cash!</strong> YouCent lets you buy and sell using YouCent Promises (YCP) – digital IOUs that you create by promising services or goods to your community. 🤝</p>
+            <p>💡 <strong>How it works:</strong> Promise now, deliver later. Get what you need today by promising your talents tomorrow. Exchange rate: 100 YCP = 1 USD (for reference only).</p>
+            <p>✨ <strong>100% Free transactions.</strong> Optional annual fee unlocks your Promise Limit to spend beyond zero balance. No investors, no hidden fees – just community exchange!</p>
+            <p><em>Keep your balance near zero by giving as much as you receive. Respect the community, keep your promises, and let's build something amazing together! 🌟</em></p>
         </div>
     </div>
 </div>
@@ -67,36 +63,31 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h2>Support Us</h2>
-            <p>Please consider supporting YouCent project. We do not have investors and funded only by founders' money. We try to be as lean as possible. Everyone works as volunteers to create and promote this great tool for people to use worldwide. Become our sponsor to help cover some infrastructure and development expenses, and small salaries for founders and those team members who really need it. Your support is much needed for this short strategic time until YouCent becomes profitable. Thanks a lot!</p>
-            <p>Become our <a href="https://patreon.com/youcent" target="_blank">Patron on Patreon</a> today!</p>
-            <p>Donate any amount via cofounder's <a href="https://paypal.me/youcentapp" target="_blank">PayPal</a></p>
+            <h2>💪 Join the Movement!</h2>
+            <p><strong>YouCent runs on passion, not profit.</strong> Built by volunteers who believe in community-powered exchange. No investors. No corporate agenda. Just real people creating real change. 🌍</p>
+            <p>🎯 <strong>Your support fuels our mission:</strong> Cover infrastructure, reward dedicated volunteers, and scale this tool worldwide. Every contribution brings us closer to sustainability.</p>
+            <p class="text-center" style="font-size: 1.2em; margin-top: 20px;">
+                <strong>❤️ Support Us Now:</strong><br>
+                <a href="https://patreon.com/youcent" target="_blank" class="btn btn-primary btn-lg m-2">🎁 Become a Patron</a>
+                <a href="https://paypal.me/youcentapp" target="_blank" class="btn btn-success btn-lg m-2">💰 Donate via PayPal</a>
+            </p>
+            <p class="text-center"><em>Together, we're building the future of community exchange. Be part of it! 🚀</em></p>
         </div>
     </div>
 </div>
-
-<br><br>
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h2>YouCent hopes you enjoy our user-friendly Privacy Policy!</h2>
-            <p>None of our websites, web apps, Android apps, iOS apps, Windows apps or any other apps or software we create, use your personal data (when we have it stored) to show you targeted ads, control your behavior, or manipulate you any other way.</p>
-            <p>Personal data (if you ever provide it) never shared with any third parties and stored securely. It will be deleted at any moment upon the user's request. It can be used for account access restorations and sending out notifications or any content user subscribed to.</p>
-            <p>Normally we never ask for or insist on providing any personal data.</p>
-        </div>
-    </div>
-</div>
-
 
 <br><br>
 
 <div class="container">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h2>Contact Us</h2>
-            <p>E-mail: <a href="mailto:arkfen@youcent.app">arkfen@youcent.app</a></p>
-            <p>WhatsApp: <a href="https://wa.me/14384552490">+14384552490</a></p>
-            <p>Twitter: <a href="https://twitter.com/YouCentApp">@@YouCentApp</a></p>
+            <h2>📬 Get in Touch</h2>
+            <p style="font-size: 1.1em;">
+                📧 <strong>Email:</strong> <a href="mailto:arkfen@youcent.app">arkfen@youcent.app</a><br>
+                💬 <strong>WhatsApp:</strong> <a href="https://wa.me/14384552490">+1 (438) 455-2490</a><br>
+                ✖️ <strong>X (Twitter):</strong> <a href="https://twitter.com/YouCentApp">@@YouCentApp</a>
+            </p>
+            <p><em>Questions? Ideas? Feedback? We'd love to hear from you! 💙</em></p>
         </div>
     </div>
 </div>
@@ -104,7 +95,9 @@
 <br><br>
 
 
-
+<PrivacyPolicyContent />
+<br>
+<br>
 
 
 @code {

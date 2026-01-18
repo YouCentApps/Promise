@@ -10,46 +10,53 @@
 @inject ISettings settings
 @inject INavigationManager navigationManagerCrossplatform
 
-<h1>Welcome to YouCent App 2.0</h1>
-
-@if (isSignedIn)
-{
-    <br>
-    <h2>You signed in as <b>@username</b></h2>
-    <p>When you want someone to send you YouCent Promises (YCP), simply share your username above. It doesn't matter if
-        you use capital letters or not.</p>
-
-    <h2>Some important information</h2>
-    <h3>YouCent Promises (YCP) are not real money</h3>
-    <p>They are just promises you can get from others by selling them goods and services in order to buy things using
-        them in the future, and vice versa.</p>
-
-    <h3>Your Balance: @balance YCP</h3>
-    <p>When you promise someone else, your balance will decrease. When someone promises you, your balance will increase.
-    </p>
-
-    <h3>Your Promise Limit: @limit YCP</h3>
-    <p>You can promise up to this amount even when your balance is equal to zero. When you do it your balance become
-        negative for some time.</p>
-
-    <h3>You can promise up to @(limit + balance) YCP</h3>
-    <p>This is maximum amount you can promise at the moment. It is the sum of your balance and limit.</p>
-
-    @if (userInforError is not null)
-    {
-        <br><br>
-        <div class="alert alert-danger" role="alert">@userInforError</div>
-    }
-
-}
-
 <div class="container">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <br><br>
-            <img src="_content/Promise.Comp/images/youcent-logo-brand.png" alt="YouCent logo" class="img-fluid" />
-            <br><br>
-            <h2>🚀 What is YouCent?</h2>
+        <div class="col-md-10 offset-md-1">
+            <h1>Welcome to YouCent Promise 2.0</h1>
+
+            @if (isSignedIn)
+            {
+                <br>
+                <h2>You signed in as <b>@username</b></h2>
+                <p>When you want someone to send you YouCent Promises (YCP), simply share your username above. It doesn't matter if
+                    you use capital letters or not.</p>
+
+                <h2>Some important information</h2>
+                <h3>YouCent Promises (YCP) are not real money</h3>
+                <p>They are just promises you can get from others by selling them goods and services in order to buy things using
+                    them in the future, and vice versa.</p>
+
+                <h3>Your Balance: @balance YCP</h3>
+                <p>When you promise someone else, your balance will decrease. When someone promises you, your balance will increase.
+                </p>
+
+                <h3>Your Promise Limit: @limit YCP</h3>
+                <p>You can promise up to this amount even when your balance is equal to zero. When you do it your balance become
+                    negative for some time.</p>
+
+                <h3>You can promise up to @(limit + balance) YCP</h3>
+                <p>This is maximum amount you can promise at the moment. It is the sum of your balance and limit.</p>
+
+                @if (userInforError is not null)
+                {
+                    <br><br>
+                    <div class="alert alert-danger" role="alert">@userInforError</div>
+                }
+
+            }
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <br><br>
+        <img src="_content/Promise.Comp/images/youcent-logo-brand.png" alt="YouCent logo" class="img-fluid" />
+        <br><br>
+        <h2>🚀 What is YouCent Promise actually is?</h2>
             <p><strong>Trade with promises, not cash!</strong> YouCent lets you buy and sell using YouCent Promises (YCP) – digital IOUs that you create by promising services or goods to your community. 🤝</p>
             <p>💡 <strong>How it works:</strong> Promise now, deliver later. Get what you need today by promising your talents tomorrow. Exchange rate: 100 YCP = 1 USD (for reference only).</p>
             <p>✨ <strong>100% Free transactions.</strong> Optional annual fee unlocks your Promise Limit to spend beyond zero balance. No investors, no hidden fees – just community exchange!</p>
@@ -62,7 +69,7 @@
 <br><br>
 <div class="container">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <div class="col-md-10 offset-md-1">
             <h2>💪 Join the Movement!</h2>
             <p><strong>YouCent runs on passion, not profit.</strong> Built by volunteers who believe in community-powered exchange. No investors. No corporate agenda. Just real people creating real change. 🌍</p>
             <p>🎯 <strong>Your support fuels our mission:</strong> Cover infrastructure, reward dedicated volunteers, and scale this tool worldwide. Every contribution brings us closer to sustainability.</p>
@@ -80,7 +87,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <div class="col-md-10 offset-md-1">
             <h2>📬 Get in Touch</h2>
             <p style="font-size: 1.1em;">
                 📧 <strong>Email:</strong> <a href="mailto:arkfen@youcent.app">arkfen@youcent.app</a><br>

@@ -27,7 +27,7 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-muted">💰 Your Balance</h6>
-                                <h2 class="card-title text-primary">@balance YCP</h2>
+                                <h2 class="card-title text-primary">@balance.ToString("N0") YCP</h2>
                                 <p class="card-text"><small>Increases when you receive, decreases when you send</small></p>
                             </div>
                         </div>
@@ -36,7 +36,7 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-muted">🎯 Promise Limit</h6>
-                                <h2 class="card-title text-success">@limit YCP</h2>
+                                <h2 class="card-title text-success">@limit.ToString("N0") YCP</h2>
                                 <p class="card-text"><small>You can go negative up to this amount</small></p>
                             </div>
                         </div>
@@ -45,7 +45,7 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-muted">✨ Available to Send</h6>
-                                <h2 class="card-title text-info">@(limit + balance) YCP</h2>
+                                <h2 class="card-title text-info">@((limit + balance).ToString("N0")) YCP</h2>
                                 <p class="card-text"><small>Maximum you can promise right now</small></p>
                             </div>
                         </div>

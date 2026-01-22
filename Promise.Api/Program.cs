@@ -49,7 +49,7 @@ builder.Services.AddOpenApi(options =>
         // Apply to all operations
         foreach (var pathItem in document.Paths.Values)
         {
-            foreach (var operation in pathItem.Operations.Values)
+            foreach (var operation in pathItem.Operations?.Values ?? Enumerable.Empty<Microsoft.OpenApi.OpenApiOperation>())
             {
                 // Initialize Security collection if null
                 operation.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();

@@ -5,7 +5,6 @@ namespace Promise.Api;
 
 public class GetTransactions
 {
-    [Obsolete]
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
         try

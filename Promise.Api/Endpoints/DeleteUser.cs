@@ -3,7 +3,6 @@
 namespace Promise.Api;
 public class DeleteUser
 {
-    [Obsolete]
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
         try

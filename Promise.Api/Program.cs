@@ -101,9 +101,7 @@ app.MapGet("/minversup", () =>
 // SignIn endpoint
 app.MapPost("/signin", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await SignIn.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json")
 .WithName("SignIn")
@@ -125,9 +123,7 @@ app.MapPost("/signup", async (HttpContext context) =>
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await UserInfo.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json")
 .WithName("GetUserInfo")
@@ -149,9 +145,7 @@ app.MapPut("/dataupdate", async (HttpContext context) =>
 // DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await DeleteUser.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json")
 .WithName("DeleteUser")
@@ -162,9 +156,7 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
 // UpdatePassword endpoint
 app.MapPut("/updatepassword", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await UpdatePassword.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<UserUpdate>("application/json")
 .WithName("UpdatePassword")
@@ -175,9 +167,7 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
 // SendPromises endpoint
 app.MapPost("/sendpromises", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await SendPromises.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<UserTransaction>("application/json")
 .WithName("SendPromises")
@@ -188,9 +178,7 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
 // GetTransactions endpoint
 app.MapPost("/gettransactions", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await GetTransactions.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<TransactionsHistoryInfo>("application/json")
 .WithName("GetTransactions")

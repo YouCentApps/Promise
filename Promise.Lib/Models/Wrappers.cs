@@ -33,3 +33,9 @@ public class RestoreAccessInfo
     public string? Username { get; set; }
     public string? UseData { get; set; }
 }
+
+public class CurrencyPreferenceUpdate
+{
+    public User? User { get; set; }
+    public byte CurrencyId { get; set; }
+}

@@ -1,0 +1,120 @@
+@inject AppState appState
+
+<div class="amount-input-container">
+    <div class="input-group">
+        <input type="number" 
+               step="@InputStep" 
+               class="form-control @CssClass" 
+               id="@InputId"
+               @bind="displayValue" 
+               @bind:after="OnValueChanged"
+               placeholder="@Placeholder" />
+        
+        @if (ShowToggle && !string.IsNullOrEmpty(appState.UserCurrencyCode))
+        {
+            <div class="input-group-text">
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="@ToggleId" @bind="useUserCurrency" @bind:after="OnToggleChanged">
+                    <label class="form-check-label" for="@ToggleId">
+                        <small>@CurrencyLabel</small>
+                    </label>
+                </div>
+            </div>
+        }
+        else
+        {
+            <span class="input-group-text">YCP</span>
+        }
+    </div>
+
+    @if (useUserCurrency && ShowWarning)
+    {
+        <small class="form-text text-muted">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg>
+            Amount will be converted to YCP (rounded to nearest whole number)
+        </small>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int PromiseCents { get; set; }
+
+    [Parameter]
+    public EventCallback<int> PromiseCentsChanged { get; set; }
+
+    [Parameter]
+    public string CssClass { get; set; } = "";
+
+    [Parameter]
+    public string Placeholder { get; set; } = "0";
+
+    [Parameter]
+    public bool ShowToggle { get; set; } = true;
+
+    [Parameter]
+    public bool ShowWarning { get; set; } = true;
+
+    private bool useUserCurrency = false;
+    private decimal displayValue;
+    private string InputId => $"amount-input-{Guid.NewGuid().ToString("N")[..8]}";
+    private string ToggleId => $"currency-input-toggle-{Guid.NewGuid().ToString("N")[..8]}";
+
+    private string CurrencyLabel => useUserCurrency ? appState.UserCurrencyCode ?? "YCP" : "YCP";
+    
+    private string InputStep => useUserCurrency ? "0.01" : "1";
+
+    protected override void OnParametersSet()
+    {
+        // Initialize display value from PromiseCents
+        if (useUserCurrency && appState.UserCurrencyRate.HasValue && appState.UserCurrencyRate.Value > 0)
+        {
+            displayValue = (decimal)(PromiseCents * appState.UserCurrencyRate.Value / 100.0);
+        }
+        else
+        {
+            displayValue = PromiseCents;
+        }
+    }
+
+    private async Task OnValueChanged()
+    {
+        // Convert display value to Promise cents
+        int newPromiseCents;
+        
+        if (useUserCurrency && appState.UserCurrencyRate.HasValue && appState.UserCurrencyRate.Value > 0)
+        {
+            // Convert from user currency to Promise cents (rounded)
+            newPromiseCents = (int)Math.Round((double)(displayValue * 100 / (decimal)appState.UserCurrencyRate.Value));
+        }
+        else
+        {
+            newPromiseCents = (int)displayValue;
+        }
+
+        if (newPromiseCents != PromiseCents)
+        {
+            await PromiseCentsChanged.InvokeAsync(newPromiseCents);
+        }
+    }
+
+    private async Task OnToggleChanged()
+    {
+        // Convert the display value when toggling
+        if (useUserCurrency && appState.UserCurrencyRate.HasValue && appState.UserCurrencyRate.Value > 0)
+        {
+            // Convert from YCP to currency
+            displayValue = (decimal)(PromiseCents * appState.UserCurrencyRate.Value / 100.0);
+        }
+        else
+        {
+            // Convert from currency to YCP
+            displayValue = PromiseCents;
+        }
+        
+        StateHasChanged();
+    }
+}

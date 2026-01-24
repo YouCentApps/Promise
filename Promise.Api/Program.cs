@@ -219,5 +219,27 @@ app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
 .WithDescription("Restores account access by verifying the user's phone number.")
 .AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User phone number for account recovery"));
 
+// GetUserCurrency endpoint
+app.MapPost("/getusercurrency", async (HttpContext context) =>
+{
+    return await GetUserCurrency.Run(context);
+})
+.Accepts<User>("application/json")
+.WithName("GetUserCurrency")
+.WithSummary("Get user's currency preference")
+.WithDescription("Retrieves the user's selected currency and exchange rate.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials to retrieve currency information"));
+
+// UpdateCurrencyPreference endpoint
+app.MapPut("/updatecurrencypreference", async (HttpContext context) =>
+{
+    return await UpdateCurrencyPreference.Run(context);
+})
+.Accepts<CurrencyPreferenceUpdate>("application/json")
+.WithName("UpdateCurrencyPreference")
+.WithSummary("Update user's currency preference")
+.WithDescription("Changes the user's preferred currency for display.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and new currency ID"));
+
 // RUN!
 app.Run();

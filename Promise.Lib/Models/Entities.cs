@@ -50,7 +50,7 @@ public class PromiseTransaction
 public class Rate
 {
     public byte CurrencyId { get; set; }
-    public float AmountFor100 { get; set; }
+    public double AmountFor100 { get; set; }
     public DateTime UpdateDate { get; set; }
 }
 

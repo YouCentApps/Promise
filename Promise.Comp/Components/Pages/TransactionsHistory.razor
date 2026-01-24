@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using System.Text
 @using System.Net.Http.Headers
+@using Promise.Comp.Components.Shared
 @inject AppState appState
 @inject NavigationManager navigationManager
 @inject ISettings settings
@@ -27,10 +28,30 @@
         </div>
         <br><br>
         <div class="col-md-6">
-            <div class="d-flex">
-                <button class="btn btn-primary" @onclick="SortByDateAsc">Show Old First</button>
-                &nbsp;&nbsp;
-                <button class="btn btn-primary" @onclick="SortByDateDesc">Show New First</button>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <button class="btn btn-primary" @onclick="SortByDateAsc">Show Old First</button>
+                    &nbsp;&nbsp;
+                    <button class="btn btn-primary" @onclick="SortByDateDesc">Show New First</button>
+                </div>
+                @if (!string.IsNullOrEmpty(appState.UserCurrencyCode))
+                {
+                    <div class="form-check form-switch ms-3">
+                        <input class="form-check-input" type="checkbox" id="currencyToggleTransactions" @bind="showInUserCurrency">
+                        <label class="form-check-label" for="currencyToggleTransactions">
+                            <small>@appState.UserCurrencyCode</small>
+                        </label>
+                        @if (showInUserCurrency)
+                        {
+                            <span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Approximate values. All transactions are processed in YouCent Promises (YCP).">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle text-muted" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                </svg>
+                            </span>
+                        }
+                    </div>
+                }
             </div>
         </div>
         <br><br>
@@ -58,12 +79,20 @@
 
                                 {
                                     <td>@transaction.SenderLogin</td>
-                                    <td><span class="text-success">+@transaction.Cents</span></td>
+                                    <td>
+                                        <span class="text-success">
+                                            +<AmountDisplay Amount="@transaction.Cents" UseCurrency="@showInUserCurrency" />
+                                        </span>
+                                    </td>
                                 }
                                 else
                                 {
                                     <td>@transaction.ReceiverLogin</td>
-                                    <td><span class="text-danger">-@transaction.Cents</span></td>
+                                    <td>
+                                        <span class="text-danger">
+                                            -<AmountDisplay Amount="@transaction.Cents" UseCurrency="@showInUserCurrency" />
+                                        </span>
+                                    </td>
                                 }
                                 <td>@transaction.Date</td>
                                 <td style="width: 20vw;">@transaction.Memo</td>
@@ -103,15 +132,16 @@
 }
 
 @code {
-    private List<SimpleUserTransaction> transactions = [];
-    private int offset;
-    private string? username;
-    private int limit = 10;
-    private DateTime from = DateTime.Now - TimeSpan.FromDays(5000);
-    private DateTime to = DateTime.Now;
-    private string api => settings.ApiUrl;
-    private bool isOldFirst = false;
-    private string? errorMessage;
+private List<SimpleUserTransaction> transactions = [];
+private int offset;
+private string? username;
+private int limit = 10;
+private DateTime from = DateTime.Now - TimeSpan.FromDays(5000);
+private DateTime to = DateTime.Now;
+private string api => settings.ApiUrl;
+private bool isOldFirst = false;
+private string? errorMessage;
+private bool showInUserCurrency = false;
 
 
     protected override async Task OnInitializedAsync()

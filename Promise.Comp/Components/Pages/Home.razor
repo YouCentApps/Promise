@@ -22,12 +22,35 @@
                     <p class="mb-0"><small>Share your username with others to receive YouCent Promises (YCP). Case doesn't matter!</small></p>
                 </div>
 
+                @if (!string.IsNullOrEmpty(appState.UserCurrencyCode))
+                {
+                    <div class="text-end mb-2">
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" id="currencyToggle" @bind="showInUserCurrency">
+                            <label class="form-check-label" for="currencyToggle">
+                                <small>Show in @appState.UserCurrencyCode</small>
+                            </label>
+                        </div>
+                        @if (showInUserCurrency)
+                        {
+                            <span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Approximate values. All transactions are processed in YouCent Promises (YCP).">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle text-muted" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                </svg>
+                            </span>
+                        }
+                    </div>
+                }
+
                 <div class="row mt-4">
                     <div class="col-md-4 mb-3">
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-muted">💰 Your Balance</h6>
-                                <h2 class="card-title text-primary">@balance.ToString("N0") YCP</h2>
+                                <h2 class="card-title text-primary">
+                                    <AmountDisplay Amount="@((long)balance)" UseCurrency="@showInUserCurrency" />
+                                </h2>
                                 <p class="card-text"><small>Increases when you receive, decreases when you send</small></p>
                             </div>
                         </div>
@@ -36,7 +59,9 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-muted">🎯 Promise Limit</h6>
-                                <h2 class="card-title text-success">@limit.ToString("N0") YCP</h2>
+                                <h2 class="card-title text-success">
+                                    <AmountDisplay Amount="@((long)limit)" UseCurrency="@showInUserCurrency" />
+                                </h2>
                                 <p class="card-text"><small>You can go negative up to this amount</small></p>
                             </div>
                         </div>
@@ -45,7 +70,9 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-muted">✨ Available to Send</h6>
-                                <h2 class="card-title text-info">@((limit + balance).ToString("N0")) YCP</h2>
+                                <h2 class="card-title text-info">
+                                    <AmountDisplay Amount="@((long)(limit + balance))" UseCurrency="@showInUserCurrency" />
+                                </h2>
                                 <p class="card-text"><small>Maximum you can promise right now</small></p>
                             </div>
                         </div>
@@ -131,6 +158,7 @@
     private decimal balance;
     private decimal limit;
     private string api => settings.ApiUrl;
+    private bool showInUserCurrency = false;
     
 
     protected override async Task OnInitializedAsync()
@@ -152,6 +180,9 @@
                 balance = userInfo.Balance;
                 limit = userInfo.PromiseLimit;
             }
+            
+            // Load user currency info
+            await LoadUserCurrency();
         }
         StateHasChanged();
     }
@@ -230,6 +261,40 @@
         }
 
         return null;
+    }
+
+    private async Task LoadUserCurrency()
+    {
+        try
+        {
+            var user = new User
+            {
+                Login = appState.Username,
+                Id = appState.UserId
+            };
+
+            var json = JsonSerializer.Serialize(user);
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{api}/getusercurrency");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var responseObject = JsonSerializer.Deserialize<JsonElement>(responseJson);
+
+            if (response.IsSuccessStatusCode && responseObject.GetProperty("success").GetBoolean())
+            {
+                appState.UserCurrencyId = responseObject.GetProperty("currencyId").GetByte();
+                appState.UserCurrencyCode = responseObject.GetProperty("currencyCode").GetString();
+                appState.UserCurrencyRate = responseObject.GetProperty("amountFor100").GetDouble();
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError($"Error loading user currency: {ex.Message}");
+            // Non-critical error, continue without currency info
+        }
     }
     
 }

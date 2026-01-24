@@ -16,6 +16,12 @@
 
     public string? Token { get; set; }
 
+    public byte? UserCurrencyId { get; set; }
+
+    public string? UserCurrencyCode { get; set; }
+
+    public double? UserCurrencyRate { get; set; }
+
     public void Clean()
     {
         IsSignedIn = false;
@@ -24,5 +30,8 @@
         UserId = 0;
         Username = null;
         Token = null;
+        UserCurrencyId = null;
+        UserCurrencyCode = null;
+        UserCurrencyRate = null;
     }
 }

@@ -32,6 +32,9 @@
         <button type="button" class="btn btn-secondary" @onclick="UpdatePersonalData">Update Personal Data</button>
         <br />
         <br />
+        <button type="button" class="btn btn-info" @onclick="CurrencySettings">Currency Settings</button>
+        <br />
+        <br />
         <button type="button" class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
     </div>
 </div>
@@ -61,6 +64,11 @@
     private void UpdatePersonalData()
     {
         navigationManager.NavigateTo("updatepersonaldata");
+    }
+
+    private void CurrencySettings()
+    {
+        navigationManager.NavigateTo("currencysettings");
     }
 
     private void DeleteAccount()

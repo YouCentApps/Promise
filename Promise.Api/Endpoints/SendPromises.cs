@@ -2,7 +2,6 @@
 
 public class SendPromises
 {
-    [Obsolete]
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
         try

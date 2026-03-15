@@ -49,7 +49,7 @@ builder.Services.AddOpenApi(options =>
         // Apply to all operations
         foreach (var pathItem in document.Paths.Values)
         {
-            foreach (var operation in pathItem.Operations.Values)
+            foreach (var operation in pathItem.Operations?.Values ?? Enumerable.Empty<Microsoft.OpenApi.OpenApiOperation>())
             {
                 // Initialize Security collection if null
                 operation.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
@@ -101,9 +101,7 @@ app.MapGet("/minversup", () =>
 // SignIn endpoint
 app.MapPost("/signin", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await SignIn.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json")
 .WithName("SignIn")
@@ -125,9 +123,7 @@ app.MapPost("/signup", async (HttpContext context) =>
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await UserInfo.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json")
 .WithName("GetUserInfo")
@@ -149,9 +145,7 @@ app.MapPut("/dataupdate", async (HttpContext context) =>
 // DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await DeleteUser.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json")
 .WithName("DeleteUser")
@@ -162,9 +156,7 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
 // UpdatePassword endpoint
 app.MapPut("/updatepassword", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await UpdatePassword.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<UserUpdate>("application/json")
 .WithName("UpdatePassword")
@@ -175,9 +167,7 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
 // SendPromises endpoint
 app.MapPost("/sendpromises", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await SendPromises.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<UserTransaction>("application/json")
 .WithName("SendPromises")
@@ -188,9 +178,7 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
 // GetTransactions endpoint
 app.MapPost("/gettransactions", async (HttpContext context) =>
 {
-#pragma warning disable CS0612 // Type or member is obsolete
     return await GetTransactions.Run(context, jwtSecret);
-#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<TransactionsHistoryInfo>("application/json")
 .WithName("GetTransactions")
@@ -230,6 +218,28 @@ app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
 .WithSummary("Restore access using phone number")
 .WithDescription("Restores account access by verifying the user's phone number.")
 .AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User phone number for account recovery"));
+
+// GetUserCurrency endpoint
+app.MapPost("/getusercurrency", async (HttpContext context) =>
+{
+    return await GetUserCurrency.Run(context);
+})
+.Accepts<User>("application/json")
+.WithName("GetUserCurrency")
+.WithSummary("Get user's currency preference")
+.WithDescription("Retrieves the user's selected currency and exchange rate.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials to retrieve currency information"));
+
+// UpdateCurrencyPreference endpoint
+app.MapPut("/updatecurrencypreference", async (HttpContext context) =>
+{
+    return await UpdateCurrencyPreference.Run(context);
+})
+.Accepts<CurrencyPreferenceUpdate>("application/json")
+.WithName("UpdateCurrencyPreference")
+.WithSummary("Update user's currency preference")
+.WithDescription("Changes the user's preferred currency for display.")
+.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and new currency ID"));
 
 // RUN!
 app.Run();

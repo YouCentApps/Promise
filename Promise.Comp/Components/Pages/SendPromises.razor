@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using System.Text
 @using System.Net.Http.Headers
+@using Promise.Comp.Components.Shared
 @inject AppState appState
 @inject NavigationManager navigationManager
 @inject ISettings settings
@@ -13,8 +14,8 @@
 
 
 <div class="form-group col-md-6">
-    <label for="cents">Amount in YouCent Promises (YCP):</label>
-    <input type="text" id="cents" class="form-control" @bind="cents" placeholder="0" />
+    <label for="cents">Amount in YouCent Promises (YCP) or your currency of choice:</label>
+    <AmountInput PromiseCents="@cents" PromiseCentsChanged="@((value) => cents = value)" Placeholder="0" />
 </div>
 <br>
 <div class="form-group col-md-6">

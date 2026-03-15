@@ -2,7 +2,6 @@
 
 public class UpdatePassword
 {
-    [Obsolete]
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
         try

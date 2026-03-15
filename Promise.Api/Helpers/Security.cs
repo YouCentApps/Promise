@@ -1,9 +1,8 @@
 ﻿using System.Text;
 using System.Security.Cryptography;
-using JWT.Algorithms;
-using JWT;
-using JWT.Exceptions;
-using JWT.Serializers;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Promise.Lib;
 
 namespace Promise.Api;
@@ -30,18 +29,33 @@ public static class Security
 
     public static double GetAccessTokenLifetimeSeconds()
     {
-        return UnixEpoch.GetSecondsSince(DateTime.Now.AddHours(accessTokenLifetimeHours));
+        var expiryTime = DateTime.UtcNow.AddHours(accessTokenLifetimeHours);
+        return new DateTimeOffset(expiryTime).ToUnixTimeSeconds();
     }
 
-    [Obsolete]
     public static string CreateBearerJwt(IDictionary<string, object> payload, string secret)
     {
-        IJwtAlgorithm algorithm = new HMACSHA256Algorithm();
-        IJsonSerializer serializer = new JsonNetSerializer();
-        IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
-        IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
-        var token = encoder.Encode(payload, secret);
-        return bearerTokenPrefix + token;
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? string.Empty)).ToList();
+
+        var expiryTime = payload.ContainsKey(PayLoadFieldExp) 
+            ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(payload[PayLoadFieldExp])).UtcDateTime
+            : DateTime.UtcNow.AddHours(accessTokenLifetimeHours);
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims),
+            Expires = expiryTime,
+            SigningCredentials = credentials
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenString = tokenHandler.WriteToken(token);
+
+        return bearerTokenPrefix + tokenString;
     }
 
     public static bool ValidateBearerJwtPrefix(string bearerJwt)
@@ -50,7 +64,6 @@ public static class Security
         return bearerJwt.LastIndexOf(bearerTokenPrefix, StringComparison.Ordinal) == 0;
     }
 
-    [Obsolete]
     public static IDictionary<string, object> GetBearerJwtLoad(string bearerJwt, string secret, bool verify = true)
     {
         var jwt = GetJwtFromBearerJwt(bearerJwt);
@@ -58,7 +71,6 @@ public static class Security
         return payload;
     }
 
-    [Obsolete]
     public static bool ValidateBearerAccessToken(string bearerJwt, string login, string secret)
     {
         if (!ValidateBearerJwtPrefix(bearerJwt)) return false;
@@ -75,27 +87,41 @@ public static class Security
         return GetHash(GetHash(password) + salt);
     }
 
-    [Obsolete]
     private static IDictionary<string, object> GetJwtLoad(string jwt, string secret, bool verify)
     {
         IDictionary<string, object> payload = new Dictionary<string, object>();
         try
         {
-            IJsonSerializer serializer = new JsonNetSerializer();
-            var provider = new UtcDateTimeProvider();
-            IJwtValidator validator = new JwtValidator(serializer, provider);
-            IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
-            IJwtAlgorithm algorithm = new HMACSHA256Algorithm();
-            IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, algorithm);
-            payload = decoder.DecodeToObject<IDictionary<string, object>>(jwt, secret, verify: verify);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = securityKey,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = verify,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var principal = tokenHandler.ValidateToken(jwt, validationParameters, out var validatedToken);
+
+            if (validatedToken is JwtSecurityToken jwtToken)
+            {
+                foreach (var claim in jwtToken.Claims)
+                {
+                    payload[claim.Type] = claim.Value;
+                }
+            }
         }
-        catch (TokenExpiredException)
+        catch (SecurityTokenExpiredException)
         {
             MainLogger.Log("Token has expired");
         }
-        catch (SignatureVerificationException)
+        catch (SecurityTokenException ex)
         {
-            MainLogger.Log("Token has invalid signature");
+            MainLogger.Log("Token validation failed: " + ex.Message);
         }
         catch (Exception e)
         {
@@ -130,13 +156,8 @@ public static class Security
     private static string GetSalt(int maximumSaltLength)
     {
         var salt = new byte[maximumSaltLength];
-#pragma warning disable SYSLIB0023 // Type or member is obsolete
-        using (var random = new RNGCryptoServiceProvider())
-        {
-            random.GetNonZeroBytes(salt);
-        }
-#pragma warning restore SYSLIB0023 // Type or member is obsolete
-        return Convert.ToBase64String(salt); ;
+        RandomNumberGenerator.Fill(salt);
+        return Convert.ToBase64String(salt);
     }
 
 

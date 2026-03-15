@@ -47,15 +47,12 @@
     private string? email;
     private string? errorMessage;
     private string? successMessage;
-    private string? maskedEmail;
-    private int maxAttempts = 3;
     private string api => settings.ApiUrl;
 
     private async Task RestoreAccessAsync()
     {
         errorMessage = null;
         successMessage = null;
-        maskedEmail = null;
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email))
         {

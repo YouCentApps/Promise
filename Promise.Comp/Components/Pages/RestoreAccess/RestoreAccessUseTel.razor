@@ -56,16 +56,13 @@
     private string? tel;
     private string? errorMessage;
     private string? successMessage;
-    private string? maskedTel;
     private string selectedCountryCode = "";
-    private int maxAttempts = 3;
     private string api => settings.ApiUrl;
 
     private async Task RestoreAccessAsync()
     {
         errorMessage = null;
         successMessage = null;
-        maskedTel = null;
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(tel) || string.IsNullOrEmpty(selectedCountryCode))
         {

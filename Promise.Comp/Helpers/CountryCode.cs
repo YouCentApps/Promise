@@ -1,7 +1,7 @@
 ﻿internal class CountryCode
 {
-    public string Name { get; set; }
-    public string Code { get; set; }
+    public string? Name { get; set; }
+    public string? Code { get; set; }
 
     public static List<CountryCode> Values = new List<CountryCode>
     {

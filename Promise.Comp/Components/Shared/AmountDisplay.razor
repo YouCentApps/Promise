@@ -1,0 +1,33 @@
+@using System.Text.Json
+@inject AppState appState
+
+@if (UseCurrency && appState.UserCurrencyRate.HasValue)
+{
+    <text>@ConvertedAmount.ToString("N2") @appState.UserCurrencyCode</text>
+}
+else
+{
+    <text>@Amount.ToString("N0") YCP</text>
+}
+
+@code {
+    [Parameter]
+    public long Amount { get; set; }
+
+    [Parameter]
+    public bool UseCurrency { get; set; } = false;
+
+    private decimal ConvertedAmount
+    {
+        get
+        {
+            if (appState.UserCurrencyRate.HasValue && appState.UserCurrencyRate.Value > 0)
+            {
+                return (decimal)(Amount * appState.UserCurrencyRate.Value / 100.0);
+            }
+            return 0;
+        }
+    }
+}
+
+

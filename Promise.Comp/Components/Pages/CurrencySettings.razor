@@ -1,0 +1,244 @@
+@page "/currencysettings"
+@using System.Net.Http.Headers
+@using System.Text
+@using System.Text.Json
+@inject AppState appState
+@inject NavigationManager navigationManager
+@inject ISettings settings
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1>Currency Settings</h1>
+            <br />
+            <p>Choose your preferred currency for displaying amounts. All transactions are still processed in YouCent Promises (YCP).</p>
+            <br />
+
+            @if (isLoading)
+            {
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label for="currency">Select Currency:</label>
+                    <select id="currency" class="form-control" @bind="selectedCurrencyId">
+                        @foreach (var currency in availableCurrencies)
+                        {
+                            <option value="@currency.Id">@currency.Name (@currency.Code)</option>
+                        }
+                    </select>
+                </div>
+                <br />
+
+                @if (currentRate != null)
+                {
+                    <div class="alert alert-info" role="alert">
+                        <strong>Exchange Rate:</strong> 100 YCP = @currentRate.AmountFor100.ToString("N2") @selectedCurrencyCode
+                        <br />
+                        <small>Last updated: @currentRate.UpdateDate.ToShortDateString()</small>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <label for="password">Confirm with Password:</label>
+                    <input type="password" id="password" class="form-control" @bind="password" placeholder="Enter your password" />
+                </div>
+                <br />
+
+                <button type="button" class="btn btn-primary" @onclick="SaveCurrencyPreference">Save Currency Preference</button>
+                <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+
+                <br /><br />
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @errorMessage
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="alert alert-success" role="alert">
+                        @successMessage
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isLoading = true;
+    private List<Currency> availableCurrencies = new();
+    private byte selectedCurrencyId;
+    private string? selectedCurrencyCode;
+    private Rate? currentRate;
+    private string? password;
+    private string? errorMessage;
+    private string? successMessage;
+    private string api => settings.ApiUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!appState.IsSignedIn)
+        {
+            navigationManager.NavigateTo("signin");
+            return;
+        }
+
+        await LoadCurrencyInfo();
+    }
+
+    private async Task LoadCurrencyInfo()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var user = new User
+            {
+                Login = appState.Username,
+                Id = appState.UserId
+            };
+
+            var json = JsonSerializer.Serialize(user);
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{api}/getusercurrency");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var responseObject = JsonSerializer.Deserialize<JsonElement>(responseJson);
+
+            if (response.IsSuccessStatusCode && responseObject.GetProperty("success").GetBoolean())
+            {
+                selectedCurrencyId = responseObject.GetProperty("currencyId").GetByte();
+                selectedCurrencyCode = responseObject.GetProperty("currencyCode").GetString();
+                
+                var rateAmount = responseObject.GetProperty("amountFor100").GetDouble();
+                var rateDate = responseObject.GetProperty("updateDate").GetDateTime();
+                currentRate = new Rate
+                {
+                    CurrencyId = selectedCurrencyId,
+                    AmountFor100 = rateAmount,
+                    UpdateDate = rateDate
+                };
+
+                var currenciesArray = responseObject.GetProperty("availableCurrencies");
+                foreach (var currencyElement in currenciesArray.EnumerateArray())
+                {
+                    availableCurrencies.Add(new Currency
+                    {
+                        Id = currencyElement.GetProperty("id").GetByte(),
+                        Code = currencyElement.GetProperty("code").GetString(),
+                        Name = currencyElement.GetProperty("name").GetString(),
+                        Number = currencyElement.GetProperty("number").GetString()
+                    });
+                }
+
+                // Update rate when selection changes
+                await UpdateRateDisplay();
+            }
+            else
+            {
+                var errorMsg = "Unknown error";
+                if (responseObject.TryGetProperty("error", out var errorProp))
+                {
+                    errorMsg = errorProp.GetString() ?? errorMsg;
+                }
+                MainLogger.LogError($"Failed to load currency info. Status: {response.StatusCode}, Error: {errorMsg}");
+                errorMessage = $"Failed to load currency information: {errorMsg}";
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError($"Error loading currency info: {ex.Message}");
+            errorMessage = "An error occurred while loading currency information.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task UpdateRateDisplay()
+    {
+        var selectedCurrency = availableCurrencies.FirstOrDefault(c => c.Id == selectedCurrencyId);
+        if (selectedCurrency != null)
+        {
+            selectedCurrencyCode = selectedCurrency.Code;
+            // In a real scenario, you'd fetch the rate for the selected currency
+            // For now, we'll keep the current rate structure
+        }
+    }
+
+    private async Task SaveCurrencyPreference()
+    {
+        errorMessage = null;
+        successMessage = null;
+
+        if (string.IsNullOrEmpty(password))
+        {
+            errorMessage = "Please enter your password to confirm.";
+            return;
+        }
+
+        try
+        {
+            var updateRequest = new CurrencyPreferenceUpdate
+            {
+                User = new User
+                {
+                    Login = appState.Username,
+                    Password = password,
+                    Id = appState.UserId
+                },
+                CurrencyId = selectedCurrencyId
+            };
+
+            var json = JsonSerializer.Serialize(updateRequest);
+            var request = new HttpRequestMessage(HttpMethod.Put, $"{api}/updatecurrencypreference");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponse>();
+
+            if (response.IsSuccessStatusCode && responseObject?.Success == true)
+            {
+                successMessage = "Currency preference updated successfully!";
+                password = null; // Clear password
+                
+                // Update AppState with new currency
+                appState.UserCurrencyId = selectedCurrencyId;
+                appState.UserCurrencyCode = selectedCurrencyCode;
+                
+                await Task.Delay(1500); // Show success message briefly
+                navigationManager.NavigateTo("profile");
+            }
+            else
+            {
+                errorMessage = responseObject?.Error ?? "Failed to update currency preference.";
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError($"Error updating currency preference: {ex.Message}");
+            errorMessage = "An error occurred while updating currency preference.";
+        }
+    }
+
+    private void GoBack()
+    {
+        navigationManager.NavigateTo("profile");
+    }
+}

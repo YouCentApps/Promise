@@ -1,5 +1,5 @@
 # .github/workflows/build.yml
-name: Build MyMauiBlazorApp for iOS
+name: Build MyMauiBlazorApp for iOS v1
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Install MAUI workload
         run: dotnet workload install maui

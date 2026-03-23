@@ -1,9 +1,9 @@
 # .github/workflows/build.yml
-name: Build MyMauiBlazorApp for iOS
+name: Build MAUI Promise Native App for iOS
 
 on:
   push:
-    branches: [ ios-build ]
+    branches: [ ios-deploy ]
 
 jobs:
   build:

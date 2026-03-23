@@ -40,10 +40,12 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<DefaultLanguage>en-us</DefaultLanguage>
 
-		<DebugSymbols>true</DebugSymbols>
-		<AndroidIncludeDebugSymbols>true</AndroidIncludeDebugSymbols>
+		</PropertyGroup>
 
-	</PropertyGroup>
+		<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+			<DebugSymbols>true</DebugSymbols>
+			<AndroidIncludeDebugSymbols>true</AndroidIncludeDebugSymbols>
+		</PropertyGroup>
 
     <ItemGroup>
         <!-- App Icon -->

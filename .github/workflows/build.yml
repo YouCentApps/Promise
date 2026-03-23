@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
@@ -22,7 +22,7 @@ jobs:
         run: dotnet workload install maui
 
       - name: Restore NuGet packages
-        run: dotnet restore ./Promise.sln
+        run: dotnet restore Promise.sln
 
       - name: Publish MAUI iOS App
-        run: dotnet publish ./Promise.Native/Promise.Native.csproj -c Release -f net10.0-ios /p:RuntimeIdentifier=ios-arm64
+        run: dotnet publish Promise.Native/Promise.Native.csproj -c Release -f net10.0-ios /p:RuntimeIdentifier=ios-arm64 --no-restore

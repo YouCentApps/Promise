@@ -13,6 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promise.Lib", "Promise.Lib\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promise.Api", "Promise.Api\Promise.Api.csproj", "{186E2A46-D4E6-4053-87FE-78E2948E88D4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{12718B9F-EFCB-4ACA-BAB4-7B9B885B14C1}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\main_promiseapi.yml = .github\workflows\main_promiseapi.yml
+		.github\workflows\main_promisesite.yml = .github\workflows\main_promisesite.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

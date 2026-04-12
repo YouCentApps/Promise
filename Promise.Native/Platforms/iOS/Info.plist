@@ -29,6 +29,6 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>CFBundleIdentifier</key>
-	<string>24XJ9Q4RR8.app.youcent</string>
+	<string>app.youcent</string>
 </dict>
 </plist>

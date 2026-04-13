@@ -16,3 +16,7 @@ dont forget .\ before openssl.exe and also  ark\ before distribution.key and oth
 
 
 
+P.S. as of 12 of April 2026 after long test on GitHub Actions I must tell 
+it took 6 hours and I ran out of minutes and it was not successful
+
+SO... I guess we need to get MAC and then remove it all here )))

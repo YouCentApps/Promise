@@ -172,3 +172,153 @@ CREATE TABLE AccessRestore (
 );
 
 ALTER TABLE AccessRestore ADD CONSTRAINT FK_AccessRestore_UserId_User_Id FOREIGN KEY (UserId) REFERENCES Users(Id);
+
+
+
+
+
+
+-- LOOKUP TABLES for Merchant operations
+
+
+CREATE TABLE MerchantPaymentRequestTypes
+(
+    Id tinyint NOT NULL,
+    Name nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT PK_MerchantPaymentRequestTypes_Id PRIMARY KEY (Id)
+);
+
+INSERT INTO MerchantPaymentRequestTypes (Id, Name) VALUES (1, N'OneTime'), (2, N'Subscription');
+
+
+CREATE TABLE MerchantPaymentRequestStatuses
+(
+    Id tinyint NOT NULL,
+    Name nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT PK_MerchantPaymentRequestStatuses_Id PRIMARY KEY (Id)
+);
+
+INSERT INTO MerchantPaymentRequestStatuses (Id, Name) VALUES (1, N'Pending'), (2, N'Completed'), (3, N'Expired'), (4, N'Cancelled');
+
+
+CREATE TABLE MerchantSubscriptionStatuses
+(
+    Id tinyint NOT NULL,
+    Name nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT PK_MerchantSubscriptionStatuses_Id PRIMARY KEY (Id)
+);
+
+INSERT INTO MerchantSubscriptionStatuses (Id, Name) VALUES (1, N'Active'), (2, N'Cancelled'), (3, N'Expired');
+
+
+CREATE TABLE MerchantTransactionTypes
+(
+    Id tinyint NOT NULL,
+    Name nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT PK_MerchantTransactionTypes_Id PRIMARY KEY (Id)
+);
+
+INSERT INTO MerchantTransactionTypes (Id, Name) VALUES (1, N'Charge'), (2, N'Refund');
+
+
+
+
+-- Merchants: a User who is also a merchant
+
+CREATE TABLE Merchants
+(
+    UserId bigint NOT NULL,
+    Name nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    Website nvarchar(256) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+    ApiKey nvarchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    ApiSecretHash nchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    Salt nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    IsActive bit NOT NULL,
+    CreatedDate datetime DEFAULT getdate() NOT NULL,
+    CONSTRAINT PK_Merchants_UserId PRIMARY KEY (UserId),
+    CONSTRAINT FK_Merchants_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES Users(Id),
+    CONSTRAINT UK_Merchants_ApiKey UNIQUE (ApiKey)
+);
+
+
+-- MerchantPaymentRequests: checkout sessions created by merchants
+
+CREATE TABLE MerchantPaymentRequests
+(
+    Id bigint IDENTITY(1,1) NOT NULL,
+    Token nvarchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    MerchantId bigint NOT NULL,
+    AmountCents int NOT NULL,
+    Description nvarchar(256) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+    TypeId tinyint NOT NULL,
+    StatusId tinyint NOT NULL,
+    CallbackUrl nvarchar(512) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+    CreatedDate datetime DEFAULT getutcdate() NOT NULL,
+    ExpiresDate datetime NULL,
+    IntervalDays int NULL,
+    SubscriptionExpiresDate datetime NULL,
+    CONSTRAINT PK_MerchantPaymentRequests_Id PRIMARY KEY (Id),
+    CONSTRAINT FK_MerchantPaymentRequests_MerchantId_Users_Id FOREIGN KEY (MerchantId) REFERENCES Users(Id),
+    CONSTRAINT FK_MerchantPaymentRequests_TypeId_MerchantPaymentRequestTypes_Id FOREIGN KEY (TypeId) REFERENCES MerchantPaymentRequestTypes(Id),
+    CONSTRAINT FK_MerchantPaymentRequests_StatusId_MerchantPaymentRequestStatuses_Id FOREIGN KEY (StatusId) REFERENCES MerchantPaymentRequestStatuses(Id),
+    CONSTRAINT UK_MerchantPaymentRequests_Token UNIQUE (Token)
+);
+
+CREATE NONCLUSTERED INDEX IX_MerchantPaymentRequests_MerchantId ON MerchantPaymentRequests (MerchantId ASC);
+
+
+-- MerchantSubscriptions: active consent-based recurring charge agreements
+
+CREATE TABLE MerchantSubscriptions
+(
+    Id bigint IDENTITY(1,1) NOT NULL,
+    MerchantId bigint NOT NULL,
+    SubscriberId bigint NOT NULL,
+    PaymentRequestId bigint NOT NULL,
+    AmountCents int NOT NULL,
+    IntervalDays int NOT NULL,
+    NextChargeDate datetime NOT NULL,
+    ExpiresDate datetime NULL,
+    StatusId tinyint NOT NULL,
+    ConsentDate datetime NOT NULL,
+    CancelledDate datetime NULL,
+    CONSTRAINT PK_MerchantSubscriptions_Id PRIMARY KEY (Id),
+    CONSTRAINT FK_MerchantSubscriptions_MerchantId_Users_Id FOREIGN KEY (MerchantId) REFERENCES Users(Id),
+    CONSTRAINT FK_MerchantSubscriptions_SubscriberUserId_Users_Id FOREIGN KEY (SubscriberUserId) REFERENCES Users(Id),
+    CONSTRAINT FK_MerchantSubscriptions_PaymentRequestId_MerchantPaymentRequests_Id FOREIGN KEY (PaymentRequestId) REFERENCES MerchantPaymentRequests(Id),
+    CONSTRAINT FK_MerchantSubscriptions_StatusId_MerchantSubscriptionStatuses_Id FOREIGN KEY (StatusId) REFERENCES MerchantSubscriptionStatuses(Id)
+);
+
+CREATE NONCLUSTERED INDEX IX_MerchantSubscriptions_MerchantId ON MerchantSubscriptions (MerchantId ASC);
+CREATE NONCLUSTERED INDEX IX_MerchantSubscriptions_SubscriberUserId ON MerchantSubscriptions (SubscriberUserId ASC);
+
+
+-- MerchantTransactions: audit log of every charge and refund
+
+CREATE TABLE MerchantTransactions
+(
+    Id bigint IDENTITY(1,1) NOT NULL,
+    MerchantId bigint NOT NULL,
+    PayerId bigint NOT NULL,
+    SubscriptionId bigint NULL,
+    PaymentRequestId bigint NOT NULL,
+    PromiseTransactionId bigint NOT NULL,
+    AmountCents int NOT NULL,
+    TypeId tinyint NOT NULL,
+    [Date] datetime DEFAULT getutcdate() NOT NULL,
+    CONSTRAINT PK_MerchantTransactions_Id PRIMARY KEY (Id),
+    CONSTRAINT FK_MerchantTransactions_MerchantId_Users_Id FOREIGN KEY (MerchantId) REFERENCES Users(Id),
+    CONSTRAINT FK_MerchantTransactions_PayerUserId_Users_Id FOREIGN KEY (PayerUserId) REFERENCES Users(Id),
+    CONSTRAINT FK_MerchantTransactions_SubscriptionId_MerchantSubscriptions_Id FOREIGN KEY (SubscriptionId) REFERENCES MerchantSubscriptions(Id),
+    CONSTRAINT FK_MerchantTransactions_PaymentRequestId_MerchantPaymentRequests_Id FOREIGN KEY (PaymentRequestId) REFERENCES MerchantPaymentRequests(Id),
+    CONSTRAINT FK_MerchantTransactions_PromiseTransactionId_PromiseTransactions_Id FOREIGN KEY (PromiseTransactionId) REFERENCES PromiseTransactions(Id),
+    CONSTRAINT FK_MerchantTransactions_TypeId_MerchantTransactionTypes_Id FOREIGN KEY (TypeId) REFERENCES MerchantTransactionTypes(Id)
+);
+
+CREATE NONCLUSTERED INDEX IX_MerchantTransactions_MerchantId ON MerchantTransactions (MerchantId ASC);
+CREATE NONCLUSTERED INDEX IX_MerchantTransactions_PayerUserId ON MerchantTransactions (PayerUserId ASC);
+CREATE NONCLUSTERED INDEX IX_MerchantTransactions_SubscriptionId ON MerchantTransactions (SubscriptionId ASC);
+
+
+
+

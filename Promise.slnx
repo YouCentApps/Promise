@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Deployment/">
+    <File Path=".github/workflows/ios_deploy_promisenative.yml" />
+    <File Path=".github/workflows/main_promiseapi.yml" />
+    <File Path=".github/workflows/main_promisesite.yml" />
+    <File Path="info.md" />
+  </Folder>
+  <Project Path="Promise.Api/Promise.Api.csproj" />
+  <Project Path="Promise.Comp/Promise.Comp.csproj" />
+  <Project Path="Promise.Lib/Promise.Lib.csproj" />
+  <Project Path="Promise.Native/Promise.Native.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="Promise.Web/Promise.Web.csproj" />
+</Solution>

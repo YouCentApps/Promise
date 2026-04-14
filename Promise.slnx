@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Common/">
+    <File Path="Directory.Build.props" />
+  </Folder>
   <Folder Name="/Deployment/">
     <File Path=".github/workflows/ios_deploy_promisenative.yml" />
     <File Path=".github/workflows/main_promiseapi.yml" />

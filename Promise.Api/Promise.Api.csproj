@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <AssemblyVersion>2.0.11</AssemblyVersion>
+    <UserSecretsId>promise-api-secrets</UserSecretsId>
   </PropertyGroup>
 
   

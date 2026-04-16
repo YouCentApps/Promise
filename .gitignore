@@ -288,9 +288,8 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
-# Development environment configuration
-Promise.Api/appsettings.Development.json
-Promise.Web/appsettings.Development.json
+# Development environment configuration - secrets go in User Secrets
+**/appsettings.Development.json
 Promise.Native/key.keystore
 /Promise.Web/Properties/ServiceDependencies/promisesite - Web Deploy
 /Promise.Api/Properties/ServiceDependencies/promiseapi - Web Deploy

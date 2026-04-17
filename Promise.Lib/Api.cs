@@ -1,4 +1,6 @@
-﻿public static class Api
+﻿namespace Promise.Lib;
+
+public static class Api
 {
     private const string localPort = "7800";
     public static readonly string UrlDev = "http://localhost:" + localPort;

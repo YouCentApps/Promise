@@ -2,25 +2,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Promise.Api;
 
-public static class GetUserCurrency
+internal static class GetUserCurrency
 {
     public static async Task<IResult> Run(HttpContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
-            
+
             User? user = null;
             try
             {
-                user = await context.Request.ReadFromJsonAsync<User>();
+                user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             }
+#pragma warning disable CA1031
             catch (Exception ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user from get currency request: " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
+#pragma warning restore CA1031
 
             if (user is null || user.Id < 1 || string.IsNullOrWhiteSpace(user.Login))
             {
@@ -29,7 +32,7 @@ public static class GetUserCurrency
             }
 
             // Verify user exists
-            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login && u.Id == user.Id);
+            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login && u.Id == user.Id).ConfigureAwait(false);
             if (dbUser is null)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -37,10 +40,10 @@ public static class GetUserCurrency
             }
 
             // Get user currency info
-            var (currency, rate) = await CurrencyService.GetUserCurrencyInfoAsync(db, user.Id);
-            
+            var (currency, rate) = await CurrencyService.GetUserCurrencyInfoAsync(db, user.Id).ConfigureAwait(false);
+
             // Get all available currencies
-            var allCurrencies = await CurrencyService.GetAllCurrenciesAsync(db);
+            var allCurrencies = await CurrencyService.GetAllCurrenciesAsync(db).ConfigureAwait(false);
 
             if (allCurrencies.Count == 0)
             {
@@ -51,8 +54,8 @@ public static class GetUserCurrency
             if (currency is null || rate is null)
             {
                 currency = allCurrencies.First();
-                rate = await db.Rates.FirstOrDefaultAsync(r => r.CurrencyId == currency.Id);
-                
+                rate = await db.Rates.FirstOrDefaultAsync(r => r.CurrencyId == currency.Id).ConfigureAwait(false);
+
                 if (rate is null)
                 {
                     return Results.Json(new { success = false, error = "No exchange rates available" });
@@ -70,11 +73,13 @@ public static class GetUserCurrency
                 availableCurrencies = allCurrencies
             });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error in GetUserCurrency: " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
+#pragma warning restore CA1031
     }
 }

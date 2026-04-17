@@ -2,7 +2,8 @@
 
 namespace Promise.Api;
 
-public class PromiseDb : DbContext
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by EF Core dependency injection")]
+internal sealed class PromiseDb : DbContext
 {
     public PromiseDb(DbContextOptions<PromiseDb> options) : base(options) { }
 
@@ -19,6 +20,7 @@ public class PromiseDb : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.Entity<Currency>().HasKey(c => c.Id);
         modelBuilder.Entity<Language>().HasKey(l => l.Id);
         modelBuilder.Entity<User>().HasKey(u => u.Id);

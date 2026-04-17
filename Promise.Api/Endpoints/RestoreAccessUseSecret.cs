@@ -5,15 +5,16 @@ using System.Text;
 
 namespace Promise.Api;
 
-public static class RestoreAccessUseSecret
+internal static class RestoreAccessUseSecret
 {
     private static string errorReason = string.Empty;
     public static async Task<IResult> Run(HttpContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
-            var request = await context.Request.ReadFromJsonAsync<RestoreAccessInfo>();
+            var request = await context.Request.ReadFromJsonAsync<RestoreAccessInfo>().ConfigureAwait(false);
 
             if (request is null || string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.UseData))
             {
@@ -21,14 +22,14 @@ public static class RestoreAccessUseSecret
                 return Results.Json(new { success = false, error = "Username and secret word are required." });
             }
 
-            var user = await db.Users.FirstOrDefaultAsync(u => u.Login == request.Username);
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Login == request.Username).ConfigureAwait(false);
             if (user is null)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 return Results.Json(new { success = false, error = "User not found." });
             }
 
-            var personalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == user.Id);
+            var personalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == user.Id).ConfigureAwait(false);
             if (personalData is null || string.IsNullOrEmpty(personalData.SecretHash))
             {
                 return Results.Json(new { success = false, error = "Sorry, you did not save a secret word before." });
@@ -37,7 +38,7 @@ public static class RestoreAccessUseSecret
             var secretHash = Security.GetHash(request.UseData + personalData.Salt);
             if (secretHash != personalData.SecretHash)
             {
-                await TrackFailedAttempt(db, user.Id);
+                await TrackFailedAttempt(db, user.Id).ConfigureAwait(false);
                 return Results.Json(new { success = false, error = "Incorrect secret word." });
             }
 
@@ -45,7 +46,7 @@ public static class RestoreAccessUseSecret
             var newPasswordHash = Security.GetPasswordHash(newPassword, user.Salt!);
             user.Password = newPasswordHash;
 
-            var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == user.Id);
+            var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == user.Id).ConfigureAwait(false);
             if (accessRestore != null)
             {
                 accessRestore.UseSecretTryNumber = 0;
@@ -58,21 +59,23 @@ public static class RestoreAccessUseSecret
             }
 
             db.Users.Update(user);
-            await db.SaveChangesAsync();
+            await db.SaveChangesAsync().ConfigureAwait(false);
 
             return Results.Json(new { success = true, newPassword });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             MainLogger.LogError($"An error occurred while restoring access. Exception: {ex.Message}");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Something went wrong... " + errorReason });
         }
+#pragma warning restore CA1031
     }
 
     private static async Task TrackFailedAttempt(PromiseDb db, long userId)
     {
-        var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == userId);
+        var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == userId).ConfigureAwait(false);
         if (accessRestore == null)
         {
             accessRestore = new AccessRestore
@@ -89,7 +92,7 @@ public static class RestoreAccessUseSecret
             accessRestore.UseSecretTryDate = DateTime.UtcNow;
             db.Set<AccessRestore>().Update(accessRestore);
         }
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync().ConfigureAwait(false);
 
         if (accessRestore.UseSecretTryNumber >= 3)
         {

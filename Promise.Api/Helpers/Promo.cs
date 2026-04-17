@@ -1,6 +1,6 @@
-﻿namespace Promise.Lib;
+﻿namespace Promise.Api;
 
-public class Promo
+internal static class Promo
 {
     public const int InitialLimit = 1500;
 

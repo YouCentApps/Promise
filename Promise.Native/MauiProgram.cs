@@ -2,7 +2,7 @@
 
 namespace Promise.Native;
 
-public static class MauiProgram
+internal static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
@@ -17,7 +17,7 @@ public static class MauiProgram
 		builder.Services.AddMauiBlazorWebView();
 
 		builder.Services.AddScoped<IMyEnvironment, MyEnvironment>();
-		builder.Services.AddScoped<ISettings, Settings>();
+		builder.Services.AddScoped<ISettings, NativeSettings>();
 		builder.Services.AddScoped<ISessionStorage, SessionStorage>();
 		builder.Services.AddScoped<AppState>();
 		builder.Services.AddScoped<INavigationManager, NativeNavigationManager>();

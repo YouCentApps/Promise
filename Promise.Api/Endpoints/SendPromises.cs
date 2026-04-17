@@ -1,9 +1,10 @@
 ﻿namespace Promise.Api;
 
-public class SendPromises
+internal static class SendPromises
 {
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             if (jwtSecret is null)
@@ -12,7 +13,7 @@ public class SendPromises
                 MainLogger.LogError("No secret provided for JWT");
                 return Results.Json(new { success = false, error = "Server error... Please try again later." });
             }
-            var userTransaction = await context.Request.ReadFromJsonAsync<UserTransaction>();
+            var userTransaction = await context.Request.ReadFromJsonAsync<UserTransaction>().ConfigureAwait(false);
             if (
                 userTransaction is null || userTransaction.Cents < 1 ||
                 userTransaction.Sender is null || userTransaction.Sender.Login is null || userTransaction.Sender.Password is null ||
@@ -99,15 +100,16 @@ public class SendPromises
             recieverBalance.Cents += userTransaction.Cents;
             db.Entry(balance).Property(x => x.Cents).IsModified = true;
             db.Entry(recieverBalance).Property(x => x.Cents).IsModified = true;
-            await db.SaveChangesAsync();
+            await db.SaveChangesAsync().ConfigureAwait(false);
             return Results.Json(new { success = true, error = "" });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             MainLogger.LogError("Error in send promises request: " + ex.Message);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error... Please try again later." });
         }
-
+#pragma warning restore CA1031
     }
 }

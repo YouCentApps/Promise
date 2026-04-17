@@ -1,7 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.Components;
 
-public class WebNavigationManager : INavigationManager
+namespace Promise.Web;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
+internal sealed class WebNavigationManager : INavigationManager
 {
     private readonly NavigationManager _navigationManager;
 

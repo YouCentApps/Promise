@@ -9,13 +9,14 @@ using Microsoft.Extensions.Options;
 
 namespace Promise.Api;
 
-public class MailSender
+internal sealed class MailSender
 {
     public const string SystemEMail = "YouCent<arkfen@youcent.app>";
     private readonly MailSettings _settings;
 
     public MailSender(IOptions<MailSettings> settings)
     {
+        ArgumentNullException.ThrowIfNull(settings);
         _settings = settings.Value;
     }
 
@@ -25,12 +26,12 @@ public class MailSender
         try
         {
             // Initialize a new instance of the MimeKit.MimeMessage class
-            var mail = new MimeMessage();
+            using var mail = new MimeMessage();
 
             #region Sender / Receiver
             // Sender
-            mail.From.Add(new MailboxAddress(_settings.DisplayName, mailData.From ?? _settings.From));
-            mail.Sender = new MailboxAddress(mailData.DisplayName ?? _settings.DisplayName, mailData.From ?? _settings.From);
+            mail.From.Add(new MailboxAddress(_settings.DisplayName, mailData.From ?? _settings.From ?? string.Empty));
+            mail.Sender = new MailboxAddress(mailData.DisplayName ?? _settings.DisplayName, mailData.From ?? _settings.From ?? string.Empty);
 
             // Receiver
             foreach (string mailAddress in mailData.To)
@@ -74,21 +75,22 @@ public class MailSender
 
             if (_settings.UseSSL)
             {
-                await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.SslOnConnect, ct);
+                await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.SslOnConnect, ct).ConfigureAwait(false);
             }
             else if (_settings.UseStartTls)
             {
-                await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, ct);
+                await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, ct).ConfigureAwait(false);
             }
-            await smtp.AuthenticateAsync(_settings.UserName, _settings.Password, ct);
-            await smtp.SendAsync(mail, ct);
-            await smtp.DisconnectAsync(true, ct);
+            await smtp.AuthenticateAsync(_settings.UserName, _settings.Password, ct).ConfigureAwait(false);
+            await smtp.SendAsync(mail, ct).ConfigureAwait(false);
+            await smtp.DisconnectAsync(true, ct).ConfigureAwait(false);
 
             #endregion
 
             return true;
 
         }
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             MainLogger.LogError(" MAILKIT ERROR: " + ex.Message + " ======== " + ex.ToString() + " +++++++++ "
@@ -96,12 +98,13 @@ public class MailSender
             MainLogger.Log(" MailsSettings: " + _settings.Host + " | " + _settings.UserName + " | " + _settings.Port + " | " + _settings.UseStartTls);
             return false;
         }
+#pragma warning restore CA1031
     }
 }
 
 
 
-public class MailData
+internal sealed class MailData
 {
     // Receiver
     public List<string> To { get; }
@@ -147,7 +150,8 @@ public class MailData
 }
 
 
-public class MailSettings
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by IOptions<MailSettings> dependency injection")]
+internal sealed class MailSettings
 {
     public string? DisplayName { get; set; }
     public string? From { get; set; }

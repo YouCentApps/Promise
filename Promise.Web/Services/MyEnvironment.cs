@@ -1,4 +1,7 @@
-﻿public class MyEnvironment : IMyEnvironment
+﻿namespace Promise.Web;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
+internal sealed class MyEnvironment : IMyEnvironment
 {
     public const string Prod = "Production";
     public const string Dev = "Development";

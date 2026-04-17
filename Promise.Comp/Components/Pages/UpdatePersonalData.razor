@@ -1,4 +1,4 @@
-﻿@page "/updatepersonaldata"
+@page "/updatepersonaldata"
 @using System.Text.Json
 @using System.Text
 @using System.Text.RegularExpressions
@@ -186,7 +186,7 @@
         {
             errorMessage = "Secret word must be at most 40 characters long.";
         }
-        else if (isSecretWordEnabled && !string.IsNullOrWhiteSpace(secretWord) && !Regex.IsMatch(secretWord, Policy.SecretWordRegex))
+        else if (isSecretWordEnabled && !string.IsNullOrWhiteSpace(secretWord) && !Regex.IsMatch(secretWord, AppPolicy.SecretWordRegex))
         {
             errorMessage = "Secret word  can consist only of uppercase letters, lowercase letters and digits.";
         }

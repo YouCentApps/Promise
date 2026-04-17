@@ -1,23 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
 namespace Promise.Api;
-public static class DataUpdate
+internal static class DataUpdate
 {
     public static async Task<IResult> Run(HttpContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
             UserData? userData = null;
             try
             {
-                userData = await context.Request.ReadFromJsonAsync<UserData>();
+                userData = await context.Request.ReadFromJsonAsync<UserData>().ConfigureAwait(false);
             }
+#pragma warning disable CA1031
             catch (Exception ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user and personal data from request : " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
+#pragma warning restore CA1031
 
             var user = userData?.User;
             if (userData is null || user is null || user.Id < 1 ||
@@ -37,7 +40,7 @@ public static class DataUpdate
                 return Results.Json(new { success = false, error = "No data or wrong data provided for PersonalData" });
             }
 
-            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
+            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login).ConfigureAwait(false);
             if (dbUser is null || dbUser.Password is null || dbUser.Salt is null || dbUser.Id != user.Id)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -50,7 +53,7 @@ public static class DataUpdate
                 return Results.Json(new { auth = false, error = "Wrong password!" });
             }
 
-            var dbPersonalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == dbUser.Id);
+            var dbPersonalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == dbUser.Id).ConfigureAwait(false);
             string salt;
             if (dbPersonalData is null)
             {
@@ -119,7 +122,7 @@ public static class DataUpdate
                     dbPersonalData.SecretHash = "";
                 }
             }
-            var records = await db.SaveChangesAsync();
+            var records = await db.SaveChangesAsync().ConfigureAwait(false);
             if (records < 1)
             {
                 context.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
@@ -133,11 +136,13 @@ public static class DataUpdate
                 Error = ""
             });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error updating user data : " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
+#pragma warning restore CA1031
     }
 }

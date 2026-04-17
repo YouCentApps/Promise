@@ -1,6 +1,10 @@
 ﻿using Microsoft.JSInterop;
 
-public class SessionStorage : ISessionStorage
+namespace Promise.Web;
+
+#pragma warning disable CA2007 // IJSRuntime requires synchronization context; ConfigureAwait(false) would break it
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
+internal sealed class SessionStorage : ISessionStorage
 {
     private readonly IJSRuntime _jsRuntime;
 

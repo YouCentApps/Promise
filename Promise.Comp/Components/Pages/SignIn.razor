@@ -1,4 +1,4 @@
-﻿@page "/signin"
+@page "/signin"
 @page "/signin/{action}"
 @using System.Text.Json
 @using System.Text
@@ -201,7 +201,7 @@
             errorMessage = "Please enter a username and password.";
             return;
         }
-        if (username?.Length > Policy.MaximumUsernameLength || password?.Length > Policy.MaximumPasswordLength)
+        if (username?.Length > AppPolicy.MaximumUsernameLength || password?.Length > AppPolicy.MaximumPasswordLength)
         {
             errorMessage = "Username or/and password must be shorter.";
             return;

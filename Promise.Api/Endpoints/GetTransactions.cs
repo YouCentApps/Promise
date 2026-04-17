@@ -3,10 +3,11 @@ using Org.BouncyCastle.Tsp;
 
 namespace Promise.Api;
 
-public class GetTransactions
+internal static class GetTransactions
 {
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             if (jwtSecret is null)
@@ -15,7 +16,7 @@ public class GetTransactions
                 MainLogger.LogError("No secret provided for JWT");
                 return Results.Json(new { success = false, error = "Server error... Please try again later." });
             }
-            var transactionsHistory = await context.Request.ReadFromJsonAsync<TransactionsHistoryInfo>();
+            var transactionsHistory = await context.Request.ReadFromJsonAsync<TransactionsHistoryInfo>().ConfigureAwait(false);
             if (transactionsHistory is null || transactionsHistory.User is null || transactionsHistory.User.Login is null)
             {
                 MainLogger.LogError("Error reading transactions history from get transactions request");
@@ -82,16 +83,18 @@ public class GetTransactions
                 Error = "",
                 Id = user.Id,
                 Login = user.Login,
-                Transactions = retrievedTransactions
+                Transactions = new System.Collections.ObjectModel.Collection<SimpleUserTransaction>(retrievedTransactions)
             });
 
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             MainLogger.LogError("Error in get transactions endpoint: " + ex.Message);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error... Please try again later." });
         }
+#pragma warning restore CA1031
     }
 
 }

@@ -1,9 +1,10 @@
 ﻿namespace Promise.Api;
 
-public class UpdatePassword
+internal static class UpdatePassword
 {
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             if (jwtSecret is null)
@@ -12,7 +13,7 @@ public class UpdatePassword
                 MainLogger.LogError("No secret provided for JWT");
                 return Results.Json(new { success = false, error = "Server error... Please try again later." });
             }
-            var userUpdate = await context.Request.ReadFromJsonAsync<UserUpdate>();
+            var userUpdate = await context.Request.ReadFromJsonAsync<UserUpdate>().ConfigureAwait(false);
             if (userUpdate is null || userUpdate.OldUser is null || userUpdate.NewUser is null ||
                 userUpdate.OldUser.Login is null || userUpdate.OldUser.Password is null ||
                 userUpdate.NewUser.Login is null || userUpdate.NewUser.Password is null ||
@@ -54,7 +55,7 @@ public class UpdatePassword
             var newHash = Security.GetPasswordHash(userUpdate.NewUser.Password, dbUser.Salt);
             dbUser.Password = newHash;
             db.Users.Update(dbUser);
-            int updated = await db.SaveChangesAsync();
+            int updated = await db.SaveChangesAsync().ConfigureAwait(false);
             if (updated < 1)
             {
                 MainLogger.LogError("Error updating password for user: " + userUpdate.OldUser.Login);
@@ -63,11 +64,13 @@ public class UpdatePassword
             }
             return Results.Json(new { success = true, error = "" });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             MainLogger.LogError("Error updating password: " + ex.Message);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error... Please try again later." });
         }
+#pragma warning restore CA1031
     }
 }

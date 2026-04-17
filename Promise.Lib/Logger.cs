@@ -1,5 +1,7 @@
 ﻿using NLog;
 
+namespace Promise.Lib;
+
 public static class MainLogger
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

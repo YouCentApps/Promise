@@ -1,4 +1,6 @@
-﻿public interface IMyEnvironment
+﻿namespace Promise.Lib;
+
+public interface IMyEnvironment
 {
     bool IsDevelopment();
     bool IsProduction();

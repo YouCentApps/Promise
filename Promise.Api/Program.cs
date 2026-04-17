@@ -101,7 +101,7 @@ app.MapGet("/minversup", () =>
 // SignIn endpoint
 app.MapPost("/signin", async (HttpContext context) =>
 {
-    return await SignIn.Run(context, jwtSecret);
+    return await SignIn.Run(context, jwtSecret).ConfigureAwait(false);
 })
 .Accepts<User>("application/json")
 .WithName("SignIn")
@@ -112,7 +112,7 @@ app.MapPost("/signin", async (HttpContext context) =>
 // SignUp endpoint
 app.MapPost("/signup", async (HttpContext context) =>
 {
-    return await SignUp.Run(context);
+    return await SignUp.Run(context).ConfigureAwait(false);
 })
 .Accepts<User>("application/json")
 .WithName("SignUp")
@@ -123,7 +123,7 @@ app.MapPost("/signup", async (HttpContext context) =>
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
-    return await UserInfo.Run(context, jwtSecret);
+    return await UserInfo.Run(context, jwtSecret).ConfigureAwait(false);
 })
 .Accepts<User>("application/json")
 .WithName("GetUserInfo")
@@ -134,7 +134,7 @@ app.MapPost("/userinfo", async (HttpContext context) =>
 // DataUpdate endpoint
 app.MapPut("/dataupdate", async (HttpContext context) =>
 {
-    return await DataUpdate.Run(context);
+    return await DataUpdate.Run(context).ConfigureAwait(false);
 })
 .Accepts<UserData>("application/json")
 .WithName("UpdateUserData")
@@ -145,7 +145,7 @@ app.MapPut("/dataupdate", async (HttpContext context) =>
 // DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
 {
-    return await DeleteUser.Run(context, jwtSecret);
+    return await DeleteUser.Run(context, jwtSecret).ConfigureAwait(false);
 })
 .Accepts<User>("application/json")
 .WithName("DeleteUser")
@@ -156,7 +156,7 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
 // UpdatePassword endpoint
 app.MapPut("/updatepassword", async (HttpContext context) =>
 {
-    return await UpdatePassword.Run(context, jwtSecret);
+    return await UpdatePassword.Run(context, jwtSecret).ConfigureAwait(false);
 })
 .Accepts<UserUpdate>("application/json")
 .WithName("UpdatePassword")
@@ -167,7 +167,7 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
 // SendPromises endpoint
 app.MapPost("/sendpromises", async (HttpContext context) =>
 {
-    return await SendPromises.Run(context, jwtSecret);
+    return await SendPromises.Run(context, jwtSecret).ConfigureAwait(false);
 })
 .Accepts<UserTransaction>("application/json")
 .WithName("SendPromises")
@@ -178,7 +178,7 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
 // GetTransactions endpoint
 app.MapPost("/gettransactions", async (HttpContext context) =>
 {
-    return await GetTransactions.Run(context, jwtSecret);
+    return await GetTransactions.Run(context, jwtSecret).ConfigureAwait(false);
 })
 .Accepts<TransactionsHistoryInfo>("application/json")
 .WithName("GetTransactions")
@@ -189,7 +189,7 @@ app.MapPost("/gettransactions", async (HttpContext context) =>
 // RestoreAccessUseSecret endpoint
 app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
 {
-    return await RestoreAccessUseSecret.Run(context);
+    return await RestoreAccessUseSecret.Run(context).ConfigureAwait(false);
 })
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithSecret")
@@ -200,7 +200,7 @@ app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
 // RestoreAccessUseEmail endpoint
 app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
 {
-    return await RestoreAccessUseEmail.Run(context);
+    return await RestoreAccessUseEmail.Run(context).ConfigureAwait(false);
 })
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithEmail")
@@ -211,7 +211,7 @@ app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
 // RestoreAccessUseTel endpoint
 app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
 {
-    return await RestoreAccessUseTel.Run(context);
+    return await RestoreAccessUseTel.Run(context).ConfigureAwait(false);
 })
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithPhone")
@@ -222,7 +222,7 @@ app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
 // GetUserCurrency endpoint
 app.MapPost("/getusercurrency", async (HttpContext context) =>
 {
-    return await GetUserCurrency.Run(context);
+    return await GetUserCurrency.Run(context).ConfigureAwait(false);
 })
 .Accepts<User>("application/json")
 .WithName("GetUserCurrency")
@@ -233,7 +233,7 @@ app.MapPost("/getusercurrency", async (HttpContext context) =>
 // UpdateCurrencyPreference endpoint
 app.MapPut("/updatecurrencypreference", async (HttpContext context) =>
 {
-    return await UpdateCurrencyPreference.Run(context);
+    return await UpdateCurrencyPreference.Run(context).ConfigureAwait(false);
 })
 .Accepts<CurrencyPreferenceUpdate>("application/json")
 .WithName("UpdateCurrencyPreference")

@@ -1,4 +1,4 @@
-﻿@using Promise.Comp.Components.Layout
+@using Promise.Comp.Components.Layout
 @layout MainLayoutNotSignedIn
 
 @page "/signup"
@@ -130,24 +130,24 @@
             return;
         }
 
-        if (username.Length < Policy.MinimumUsernameLength || username.Length > Policy.MaximumUsernameLength)
+        if (username.Length < AppPolicy.MinimumUsernameLength || username.Length > AppPolicy.MaximumUsernameLength)
         {
-            errorMessage = $"Username must be between {Policy.MinimumUsernameLength} and {Policy.MaximumUsernameLength} characters.";
+            errorMessage = $"Username must be between {AppPolicy.MinimumUsernameLength} and {AppPolicy.MaximumUsernameLength} characters.";
             return;
         }
-        else if (password.Length < Policy.MinimumPasswordLength || password.Length > Policy.MaximumPasswordLength)
+        else if (password.Length < AppPolicy.MinimumPasswordLength || password.Length > AppPolicy.MaximumPasswordLength)
         {
-            errorMessage = $"Password must be between {Policy.MinimumPasswordLength} and {Policy.MaximumPasswordLength} characters.";
+            errorMessage = $"Password must be between {AppPolicy.MinimumPasswordLength} and {AppPolicy.MaximumPasswordLength} characters.";
             return;
         }
         
-        if (!Regex.IsMatch(password, Policy.PasswordRegex))
+        if (!Regex.IsMatch(password, AppPolicy.PasswordRegex))
         {
             errorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.";
             return;
         }
 
-        if (!Regex.IsMatch(username, Policy.UsernameRegex))
+        if (!Regex.IsMatch(username, AppPolicy.UsernameRegex))
         {
             errorMessage = "Username can consist only of uppercase letters, lowercase letters and digits.";
             return;

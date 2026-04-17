@@ -1,4 +1,6 @@
-﻿public class Currency
+﻿namespace Promise.Lib;
+
+public class Currency
 {
     public byte Id { get; set; }
     public string? Code { get; set; }

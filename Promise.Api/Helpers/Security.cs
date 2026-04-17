@@ -7,7 +7,7 @@ using Promise.Lib;
 
 namespace Promise.Api;
 
-public static class Security
+internal static class Security
 {
     public const string AuthorizationHttpHeader = "Authorization";
     public const string PayLoadFieldLogin = "login";
@@ -40,8 +40,8 @@ public static class Security
 
         var claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? string.Empty)).ToList();
 
-        var expiryTime = payload.ContainsKey(PayLoadFieldExp) 
-            ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(payload[PayLoadFieldExp])).UtcDateTime
+        var expiryTime = payload.TryGetValue(PayLoadFieldExp, out var expValue)
+            ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(expValue, System.Globalization.CultureInfo.InvariantCulture)).UtcDateTime
             : DateTime.UtcNow.AddHours(accessTokenLifetimeHours);
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -77,24 +77,25 @@ public static class Security
         var jwt = GetJwtFromBearerJwt(bearerJwt);
         var payload = GetJwtLoad(jwt, secret, true);
         if (payload.Count == 0) return false;
-        if (!payload.ContainsKey(PayLoadFieldLogin)) return false;
-        if (!payload.ContainsKey(PayLoadFieldAuth)) return false;
-        return login.Equals(payload[PayLoadFieldLogin].ToString(), StringComparison.OrdinalIgnoreCase)
-               && payload[PayLoadFieldAuth].ToString() == true.ToString();
+        if (!payload.TryGetValue(PayLoadFieldLogin, out var loginValue)) return false;
+        if (!payload.TryGetValue(PayLoadFieldAuth, out var authValue)) return false;
+        return login.Equals(loginValue?.ToString(), StringComparison.OrdinalIgnoreCase)
+               && authValue?.ToString() == true.ToString();
     }
     public static string GetPasswordHash(string password, string salt)
     {
         return GetHash(GetHash(password) + salt);
     }
 
-    private static IDictionary<string, object> GetJwtLoad(string jwt, string secret, bool verify)
+    private static Dictionary<string, object> GetJwtLoad(string jwt, string secret, bool verify)
     {
-        IDictionary<string, object> payload = new Dictionary<string, object>();
+        Dictionary<string, object> payload = [];
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
+#pragma warning disable CA5404
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -104,6 +105,7 @@ public static class Security
                 ValidateLifetime = verify,
                 ClockSkew = TimeSpan.Zero
             };
+#pragma warning restore CA5404
 
             var principal = tokenHandler.ValidateToken(jwt, validationParameters, out var validatedToken);
 
@@ -123,10 +125,12 @@ public static class Security
         {
             MainLogger.Log("Token validation failed: " + ex.Message);
         }
+#pragma warning disable CA1031
         catch (Exception e)
         {
             MainLogger.Log("JWT exception " + e);
         }
+#pragma warning restore CA1031
         return payload;
     }
 
@@ -141,7 +145,7 @@ public static class Security
         var sBuilder = new StringBuilder();
         foreach (var b in bytes)
         {
-            sBuilder.Append(b.ToString("x2"));
+            sBuilder.Append(b.ToString("x2", System.Globalization.CultureInfo.InvariantCulture));
         }
         return sBuilder.ToString();
     }
@@ -185,8 +189,12 @@ public static class Security
     internal static string GenerateTemporaryPassword()
     {
         const string chars = "0123456789ABCDEFGHIJKLMNOPQRS0123456789TUVWXYZ0123456789abcdefghijklmnopqrs0123456789tuvwxyz0123456789";
-        var random = new Random();
-        return new string(Enumerable.Repeat(chars, 8).Select(s => s[random.Next(s.Length)]).ToArray());
+        var result = new char[8];
+        for (int i = 0; i < result.Length; i++)
+        {
+            result[i] = chars[RandomNumberGenerator.GetInt32(chars.Length)];
+        }
+        return new string(result);
     }
 
 }

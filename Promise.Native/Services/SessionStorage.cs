@@ -1,6 +1,9 @@
 ﻿using Microsoft.JSInterop;
 
-public class SessionStorage : ISessionStorage
+namespace Promise.Native;
+
+#pragma warning disable CA2007 // IJSRuntime requires synchronization context; ConfigureAwait(false) would break it
+internal sealed class SessionStorage : ISessionStorage
 {
     private readonly IJSRuntime _jsRuntime;
 

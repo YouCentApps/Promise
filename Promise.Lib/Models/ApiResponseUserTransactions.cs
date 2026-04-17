@@ -1,6 +1,10 @@
-﻿public class ApiResponseUserTransactions : ApiResponseUser
+﻿using System.Collections.ObjectModel;
+
+namespace Promise.Lib;
+
+public class ApiResponseUserTransactions : ApiResponseUser
 {
-    public List<SimpleUserTransaction>? Transactions { get; set; }
+    public Collection<SimpleUserTransaction>? Transactions { get; init; }
 }
 
 public class SimpleUserTransaction

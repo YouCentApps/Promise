@@ -1,4 +1,6 @@
-﻿public static class AppVersion
+﻿namespace Promise.Comp;
+
+public static class AppVersion
 {
     public const int Major = 2;
     public const int Minor = 0;

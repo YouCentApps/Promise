@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Promise.Api;
 
-public static class CurrencyService
+internal static class CurrencyService
 {
     /// <summary>
     /// Convert Promise cents to user's currency amount
@@ -27,17 +27,18 @@ public static class CurrencyService
     /// </summary>
     public static async Task<(Currency? currency, Rate? rate)> GetUserCurrencyInfoAsync(PromiseDb db, long userId)
     {
+        ArgumentNullException.ThrowIfNull(db);
         var userSettings = await db.UserSettings
-            .FirstOrDefaultAsync(us => us.UserId == userId);
+            .FirstOrDefaultAsync(us => us.UserId == userId).ConfigureAwait(false);
 
         if (userSettings == null)
             return (null, null);
 
         var currency = await db.Currencies
-            .FirstOrDefaultAsync(c => c.Id == userSettings.CurrencyId);
+            .FirstOrDefaultAsync(c => c.Id == userSettings.CurrencyId).ConfigureAwait(false);
 
         var rate = await db.Rates
-            .FirstOrDefaultAsync(r => r.CurrencyId == userSettings.CurrencyId);
+            .FirstOrDefaultAsync(r => r.CurrencyId == userSettings.CurrencyId).ConfigureAwait(false);
 
         return (currency, rate);
     }
@@ -47,7 +48,8 @@ public static class CurrencyService
     /// </summary>
     public static async Task<List<Currency>> GetAllCurrenciesAsync(PromiseDb db)
     {
-        return await db.Currencies.ToListAsync();
+        ArgumentNullException.ThrowIfNull(db);
+        return await db.Currencies.ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -55,19 +57,20 @@ public static class CurrencyService
     /// </summary>
     public static async Task<bool> UpdateUserCurrencyAsync(PromiseDb db, long userId, byte currencyId)
     {
+        ArgumentNullException.ThrowIfNull(db);
         var userSettings = await db.UserSettings
-            .FirstOrDefaultAsync(us => us.UserId == userId);
+            .FirstOrDefaultAsync(us => us.UserId == userId).ConfigureAwait(false);
 
         if (userSettings == null)
             return false;
 
         // Verify currency exists
-        var currencyExists = await db.Currencies.AnyAsync(c => c.Id == currencyId);
+        var currencyExists = await db.Currencies.AnyAsync(c => c.Id == currencyId).ConfigureAwait(false);
         if (!currencyExists)
             return false;
 
         userSettings.CurrencyId = currencyId;
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync().ConfigureAwait(false);
         return true;
     }
 }

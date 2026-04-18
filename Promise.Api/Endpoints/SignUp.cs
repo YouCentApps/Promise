@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-namespace Promise.Api;
+﻿namespace Promise.Api;
 
 internal static class SignUp
 {

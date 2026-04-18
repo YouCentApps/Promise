@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-
 namespace Promise.Api;
 
 internal static class RestoreAccessUseTel

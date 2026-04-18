@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Promise.Api;
 
 internal static class CurrencyService

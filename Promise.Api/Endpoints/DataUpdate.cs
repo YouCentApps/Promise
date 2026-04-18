@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-namespace Promise.Api;
+﻿namespace Promise.Api;
 internal static class DataUpdate
 {
     public static async Task<IResult> Run(HttpContext context)

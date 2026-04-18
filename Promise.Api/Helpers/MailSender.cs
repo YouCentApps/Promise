@@ -1,7 +1,6 @@
 ﻿using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using Microsoft.Extensions.Options;
 
 // using YouCent.Common;
 // using YouCent.Promise.Models;

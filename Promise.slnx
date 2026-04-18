@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Common/">
     <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/Deployment/">
     <File Path=".github/workflows/ios_deploy_promisenative.yml" />

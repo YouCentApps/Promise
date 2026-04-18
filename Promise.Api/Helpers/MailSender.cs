@@ -2,11 +2,7 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 
-// using YouCent.Common;
-// using YouCent.Promise.Models;
-// using YouCent.Promise.Settings;
-
-namespace Promise.Api;
+namespace Promise.Api.Helpers;
 
 internal sealed class MailSender
 {
@@ -72,6 +68,12 @@ internal sealed class MailSender
 
             using var smtp = new SmtpClient();
 
+            if(_settings.Host == null || _settings.UserName == null || _settings.Password == null)
+            {
+                MainLogger.LogError(" MAILKIT ERROR: Host, UserName or Password is null. Check your MailSettings configuration.");
+                return false;
+            }
+
             if (_settings.UseSSL)
             {
                 await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.SslOnConnect, ct).ConfigureAwait(false);
@@ -81,12 +83,18 @@ internal sealed class MailSender
                 await smtp.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, ct).ConfigureAwait(false);
             }
             await smtp.AuthenticateAsync(_settings.UserName, _settings.Password, ct).ConfigureAwait(false);
-            await smtp.SendAsync(mail, ct).ConfigureAwait(false);
+            string response = await smtp.SendAsync(mail, ct).ConfigureAwait(false);
             await smtp.DisconnectAsync(true, ct).ConfigureAwait(false);
-
+            
             #endregion
 
-            return true;
+            if (response != null)
+            {
+                MainLogger.Log(" MAILKIT RESPONSE: " + response);
+                return true;
+            }
+            MainLogger.LogError(" MAILKIT ERROR: No response received from SMTP server.");
+            return false;
 
         }
         #pragma warning disable CA1031
@@ -103,49 +111,31 @@ internal sealed class MailSender
 
 
 
-internal sealed class MailData
+internal sealed class MailData(
+    List<string> to,
+    string subject,
+    string? body = null,
+    string? from = null,
+    string? displayName = null,
+    string? replyTo = null,
+    string? replyToName = null,
+    List<string>? bcc = null,
+    List<string>? cc = null)
 {
     // Receiver
-    public List<string> To { get; }
-    public List<string> Bcc { get; }
-    public List<string> Cc { get; }
+    public List<string> To { get; } = to;
+    public List<string> Bcc { get; } = bcc ?? [];
+    public List<string> Cc { get; } = cc ?? [];
 
     // Sender
-    public string? From { get; }
-    public string? DisplayName { get; }
-    public string? ReplyTo { get; }
-    public string? ReplyToName { get; }
+    public string? From { get; } = from;
+    public string? DisplayName { get; } = displayName;
+    public string? ReplyTo { get; } = replyTo;
+    public string? ReplyToName { get; } = replyToName;
 
     // Content
-    public string Subject { get; }
-    public string? Body { get; }
-
-    public MailData(
-        List<string> to,
-        string subject,
-        string? body = null,
-        string? from = null,
-        string? displayName = null,
-        string? replyTo = null,
-        string? replyToName = null,
-        List<string>? bcc = null,
-        List<string>? cc = null)
-    {
-        // Receiver
-        To = to;
-        Bcc = bcc ?? [];
-        Cc = cc ?? [];
-
-        // Sender
-        From = from;
-        DisplayName = displayName;
-        ReplyTo = replyTo;
-        ReplyToName = replyToName;
-
-        // Content
-        Subject = subject;
-        Body = body;
-    }
+    public string Subject { get; } = subject;
+    public string? Body { get; } = body;
 }
 
 

@@ -1,6 +1,4 @@
-﻿using System.Reflection.PortableExecutable;
-
-namespace Promise.Api;
+﻿namespace Promise.Api;
 internal static class DeleteUser
 {
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)

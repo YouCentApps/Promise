@@ -1,5 +1,3 @@
-using Microsoft.Maui.Controls;
-
 namespace Promise.Native;
 
 public partial class UpdateApp : ContentPage

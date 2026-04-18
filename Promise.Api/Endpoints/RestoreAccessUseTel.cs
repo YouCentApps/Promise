@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Promise.Lib;
-using System.Text;
 
 namespace Promise.Api;
 

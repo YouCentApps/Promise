@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Tsp;
-
-namespace Promise.Api;
+﻿namespace Promise.Api;
 
 internal static class GetTransactions
 {

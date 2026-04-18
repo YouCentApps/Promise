@@ -1,9 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Promise.Lib;
-using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Promise.Api;
 

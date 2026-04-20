@@ -10,7 +10,7 @@ on:
     paths:
       - 'Promise.Web/**'
       - 'Promise.Comp/**'
-      - 'Promise.Lib/**'
+      - 'Promise.Common/**'
   workflow_dispatch:
 
 jobs:

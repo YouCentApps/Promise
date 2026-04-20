@@ -1,4 +1,4 @@
-namespace Promise.Lib.Models;
+namespace Promise.Common.Models;
 
 public class ApiResponseMerchant : ApiResponse
 {

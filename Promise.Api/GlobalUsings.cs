@@ -1,5 +1,5 @@
-global using Promise.Lib;
-global using Promise.Lib.Models;
+global using Promise.Common;
+global using Promise.Common.Models;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Options;
 global using Promise.Api.Helpers;

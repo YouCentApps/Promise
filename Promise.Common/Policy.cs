@@ -1,4 +1,4 @@
-namespace Promise.Lib;
+namespace Promise.Common;
 
 public static class AppPolicy
 {

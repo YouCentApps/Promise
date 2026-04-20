@@ -9,7 +9,7 @@ on:
       - main
     paths:
       - 'Promise.Api/**'
-      - 'Promise.Lib/**'
+      - 'Promise.Common/**'
   workflow_dispatch:
 
 jobs:

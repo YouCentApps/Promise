@@ -17,7 +17,7 @@
   </Folder>
   <Project Path="Promise.Api/Promise.Api.csproj" />
   <Project Path="Promise.Comp/Promise.Comp.csproj" />
-  <Project Path="Promise.Lib/Promise.Lib.csproj" />
+  <Project Path="Promise.Common/Promise.Common.csproj" />
   <Project Path="Promise.Native/Promise.Native.csproj">
     <Deploy />
   </Project>

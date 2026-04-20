@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Promise.Lib\Promise.Lib.csproj" />
+    <ProjectReference Include="..\Promise.Common\Promise.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,6 +9,12 @@
     <File Path=".github/workflows/main_promisesite.yml" />
     <File Path="info.md" />
   </Folder>
+  <Folder Name="/Documents/">
+    <File Path="Documents/db.sql" />
+    <File Path="Documents/merchant-api-guide.md" />
+    <File Path="Documents/merchant-system-internal.md" />
+    <File Path="Documents/readme.md" />
+  </Folder>
   <Project Path="Promise.Api/Promise.Api.csproj" />
   <Project Path="Promise.Comp/Promise.Comp.csproj" />
   <Project Path="Promise.Lib/Promise.Lib.csproj" />

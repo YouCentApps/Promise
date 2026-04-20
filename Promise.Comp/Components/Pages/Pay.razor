@@ -1,0 +1,150 @@
+@page "/pay/{Token}"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Promise.Comp.Components.Shared
+@using Promise.Lib.Models
+@inject AppState appState
+@inject NavigationManager navigationManager
+@inject ISettings settings
+
+<h1>Payment</h1>
+<br>
+
+@if (isLoading)
+{
+    <p>Loading payment details...</p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">@errorMessage</div>
+}
+else if (paymentCompleted)
+{
+    <div class="alert alert-success" role="alert">Payment completed successfully!</div>
+    @if (subscriptionId.HasValue)
+    {
+        <p>A subscription has been created (ID: @subscriptionId).</p>
+    }
+}
+else if (paymentInfo is not null)
+{
+    <div class="card col-md-6">
+        <div class="card-body">
+            <h5 class="card-title">@paymentInfo.MerchantName</h5>
+            @if (!string.IsNullOrEmpty(paymentInfo.Description))
+            {
+                <p class="card-text">@paymentInfo.Description</p>
+            }
+            <p><strong>Amount:</strong> <AmountDisplay PromiseCents="@paymentInfo.AmountCents" /></p>
+            <p><strong>Type:</strong> @(paymentInfo.TypeId == 2 ? $"Subscription (every {paymentInfo.IntervalDays} days)" : "One-time payment")</p>
+        </div>
+    </div>
+    <br>
+    @if (!appState.IsSignedIn)
+    {
+        <p>Please sign in to complete the payment.</p>
+        <button class="btn btn-primary" @onclick="RedirectToSignIn">Sign In</button>
+    }
+    else
+    {
+        <div class="form-group col-md-6">
+            <label for="password">Enter your password to confirm:</label>
+            <input type="password" id="password" class="form-control" @bind="password" placeholder="Password" />
+        </div>
+        <br>
+        <button type="button" class="btn btn-primary" @onclick="ConfirmPaymentAsync" disabled="@isProcessing">
+            @(isProcessing ? "Processing..." : "Confirm Payment")
+        </button>
+    }
+}
+
+@code {
+    [Parameter]
+    public string? Token { get; set; }
+
+    private ApiResponsePaymentRequestInfo? paymentInfo;
+    private string? password;
+    private string? errorMessage;
+    private bool isLoading = true;
+    private bool isProcessing;
+    private bool paymentCompleted;
+    private long? subscriptionId;
+    private string api => settings.ApiUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(Token))
+        {
+            errorMessage = "Invalid payment link.";
+            isLoading = false;
+            return;
+        }
+        try
+        {
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync($"{api}/pay/{Token}");
+            paymentInfo = await response.Content.ReadFromJsonAsync<ApiResponsePaymentRequestInfo>();
+            if (paymentInfo is null || !paymentInfo.Success)
+            {
+                errorMessage = paymentInfo?.Error ?? "Payment request not found or no longer valid.";
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError("Error loading payment info: " + ex);
+            errorMessage = "Failed to load payment details.";
+        }
+        isLoading = false;
+    }
+
+    private void RedirectToSignIn()
+    {
+        navigationManager.NavigateTo($"signin?returnUrl=/pay/{Token}");
+    }
+
+    private async Task ConfirmPaymentAsync()
+    {
+        errorMessage = null;
+        if (string.IsNullOrEmpty(password))
+        {
+            errorMessage = "Please enter your password.";
+            return;
+        }
+
+        isProcessing = true;
+        try
+        {
+            var payRequest = new PayByTokenRequest
+            {
+                User = new User { Login = appState.Username, Password = password, Id = appState.UserId },
+                Token = Token
+            };
+
+            var json = JsonSerializer.Serialize(payRequest);
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{api}/pay/{Token}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponsePaymentResult>();
+
+            if (response.IsSuccessStatusCode && result is not null && result.Success)
+            {
+                paymentCompleted = true;
+                subscriptionId = result.SubscriptionId;
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Payment failed. Please try again.";
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError("Error in payment: " + ex);
+            errorMessage = "An error occurred. Please try again.";
+        }
+        isProcessing = false;
+    }
+}

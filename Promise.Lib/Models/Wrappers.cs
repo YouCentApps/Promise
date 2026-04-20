@@ -1,4 +1,4 @@
-﻿namespace Promise.Lib;
+﻿namespace Promise.Lib.Models;
 
 public class UserData
 {
@@ -40,4 +40,49 @@ public class CurrencyPreferenceUpdate
 {
     public User? User { get; set; }
     public byte CurrencyId { get; set; }
+}
+
+// Merchant request wrappers
+
+public class MerchantRegisterRequest
+{
+    public User? User { get; set; }
+    public string? MerchantName { get; set; }
+    public string? Website { get; set; }
+}
+
+public class MerchantApiAuth
+{
+    public string? ApiKey { get; set; }
+    public string? ApiSecret { get; set; }
+}
+
+public class CreatePaymentRequestInput
+{
+    public MerchantApiAuth? Auth { get; set; }
+    public int AmountCents { get; set; }
+    public string? Description { get; set; }
+    public byte TypeId { get; set; }
+    public Uri? CallbackUrl { get; set; }
+    public DateTime? ExpiresDate { get; set; }
+    public int? IntervalDays { get; set; }
+    public DateTime? SubscriptionExpiresDate { get; set; }
+}
+
+public class PayByTokenRequest
+{
+    public User? User { get; set; }
+    public string? Token { get; set; }
+}
+
+public class SubscriptionChargeRequest
+{
+    public MerchantApiAuth? Auth { get; set; }
+    public long SubscriptionId { get; set; }
+}
+
+public class MerchantRefundRequest
+{
+    public MerchantApiAuth? Auth { get; set; }
+    public long MerchantTransactionId { get; set; }
 }

@@ -1,0 +1,161 @@
+@page "/subscriptions"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Promise.Comp.Components.Shared
+@using Promise.Lib.Models
+@inject AppState appState
+@inject NavigationManager navigationManager
+@inject ISettings settings
+
+<h1>My Subscriptions</h1>
+<br>
+
+@if (!appState.IsSignedIn)
+{
+    <p>Please sign in to view your subscriptions.</p>
+}
+else if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">@errorMessage</div>
+}
+else if (subscriptions is null || subscriptions.Count == 0)
+{
+    <p>You have no subscriptions.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Merchant</th>
+                    <th>Amount</th>
+                    <th>Interval</th>
+                    <th>Next Charge</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sub in subscriptions)
+                {
+                    <tr>
+                        <td>@sub.MerchantName</td>
+                        <td><AmountDisplay PromiseCents="@sub.AmountCents" /></td>
+                        <td>Every @sub.IntervalDays days</td>
+                        <td>@sub.NextChargeDate.ToString("yyyy-MM-dd")</td>
+                        <td>@GetStatusName(sub.StatusId)</td>
+                        <td>
+                            @if (sub.StatusId == 1)
+                            {
+                                <button class="btn btn-sm btn-danger" @onclick="() => CancelAsync(sub.Id)" disabled="@isCancelling">Cancel</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success" role="alert">@successMessage</div>
+}
+
+@code {
+    private System.Collections.ObjectModel.Collection<ApiResponseSubscription>? subscriptions;
+    private string? errorMessage;
+    private string? successMessage;
+    private bool isLoading = true;
+    private bool isCancelling;
+    private string api => settings.ApiUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!appState.IsSignedIn)
+        {
+            isLoading = false;
+            return;
+        }
+        await LoadSubscriptionsAsync();
+    }
+
+    private async Task LoadSubscriptionsAsync()
+    {
+        isLoading = true;
+        try
+        {
+            var user = new User { Login = appState.Username, Password = "x", Id = appState.UserId };
+            var json = JsonSerializer.Serialize(user);
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{api}/user/subscriptions");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponseMerchantList<ApiResponseSubscription>>();
+            if (result is not null && result.Success)
+            {
+                subscriptions = result.Items;
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to load subscriptions.";
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError("Error loading subscriptions: " + ex);
+            errorMessage = "Failed to load subscriptions.";
+        }
+        isLoading = false;
+    }
+
+    private async Task CancelAsync(long subscriptionId)
+    {
+        isCancelling = true;
+        successMessage = null;
+        errorMessage = null;
+        try
+        {
+            var user = new User { Login = appState.Username, Password = "x", Id = appState.UserId };
+            var json = JsonSerializer.Serialize(user);
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"{api}/user/subscriptions/{subscriptionId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
+            if (response.IsSuccessStatusCode && result is not null && result.Success)
+            {
+                successMessage = "Subscription cancelled.";
+                await LoadSubscriptionsAsync();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to cancel subscription.";
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError("Error cancelling subscription: " + ex);
+            errorMessage = "Failed to cancel subscription.";
+        }
+        isCancelling = false;
+    }
+
+    private static string GetStatusName(byte statusId) => statusId switch
+    {
+        1 => "Active",
+        2 => "Cancelled",
+        3 => "Expired",
+        _ => "Unknown"
+    };
+}

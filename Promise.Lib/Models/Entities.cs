@@ -1,4 +1,4 @@
-﻿namespace Promise.Lib;
+﻿namespace Promise.Lib.Models;
 
 public class Currency
 {
@@ -87,5 +87,89 @@ public class AccessRestore
     public DateTime? UseEmailTryDate { get; set; }
     public int UseTelTryNumber { get; set; }
     public DateTime? UseTelTryDate { get; set; }
+}
+
+// Lookup types for Merchant operations
+
+public class MerchantPaymentRequestType
+{
+    public byte Id { get; set; }
+    public string? Name { get; set; }
+}
+
+public class MerchantPaymentRequestStatus
+{
+    public byte Id { get; set; }
+    public string? Name { get; set; }
+}
+
+public class MerchantSubscriptionStatus
+{
+    public byte Id { get; set; }
+    public string? Name { get; set; }
+}
+
+public class MerchantTransactionType
+{
+    public byte Id { get; set; }
+    public string? Name { get; set; }
+}
+
+// Merchant entities
+
+public class Merchant
+{
+    public long UserId { get; set; }
+    public string? Name { get; set; }
+    public string? Website { get; set; }
+    public string? ApiKey { get; set; }
+    public string? ApiSecretHash { get; set; }
+    public string? Salt { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedDate { get; set; }
+}
+
+public class MerchantPaymentRequest
+{
+    public long Id { get; set; }
+    public string? Token { get; set; }
+    public long MerchantId { get; set; }
+    public int AmountCents { get; set; }
+    public string? Description { get; set; }
+    public byte TypeId { get; set; }
+    public byte StatusId { get; set; }
+    public Uri? CallbackUrl { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime? ExpiresDate { get; set; }
+    public int? IntervalDays { get; set; }
+    public DateTime? SubscriptionExpiresDate { get; set; }
+}
+
+public class MerchantSubscription
+{
+    public long Id { get; set; }
+    public long MerchantId { get; set; }
+    public long SubscriberId { get; set; }
+    public long PaymentRequestId { get; set; }
+    public int AmountCents { get; set; }
+    public int IntervalDays { get; set; }
+    public DateTime NextChargeDate { get; set; }
+    public DateTime? ExpiresDate { get; set; }
+    public byte StatusId { get; set; }
+    public DateTime ConsentDate { get; set; }
+    public DateTime? CancelledDate { get; set; }
+}
+
+public class MerchantTransaction
+{
+    public long Id { get; set; }
+    public long MerchantId { get; set; }
+    public long PayerId { get; set; }
+    public long? SubscriptionId { get; set; }
+    public long PaymentRequestId { get; set; }
+    public long PromiseTransactionId { get; set; }
+    public int AmountCents { get; set; }
+    public byte TypeId { get; set; }
+    public DateTime Date { get; set; }
 }
 

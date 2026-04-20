@@ -284,7 +284,7 @@ CREATE TABLE MerchantSubscriptions
     CancelledDate datetime NULL,
     CONSTRAINT PK_MerchantSubscriptions_Id PRIMARY KEY (Id),
     CONSTRAINT FK_MerchantSubscriptions_MerchantId_Users_Id FOREIGN KEY (MerchantId) REFERENCES Users(Id),
-    CONSTRAINT FK_MerchantSubscriptions_SubscriberUserId_Users_Id FOREIGN KEY (SubscriberUserId) REFERENCES Users(Id),
+    CONSTRAINT FK_MerchantSubscriptions_SubscriberId_Users_Id FOREIGN KEY (SubscriberId) REFERENCES Users(Id),
     CONSTRAINT FK_MerchantSubscriptions_PaymentRequestId_MerchantPaymentRequests_Id FOREIGN KEY (PaymentRequestId) REFERENCES MerchantPaymentRequests(Id),
     CONSTRAINT FK_MerchantSubscriptions_StatusId_MerchantSubscriptionStatuses_Id FOREIGN KEY (StatusId) REFERENCES MerchantSubscriptionStatuses(Id)
 );
@@ -308,7 +308,7 @@ CREATE TABLE MerchantTransactions
     [Date] datetime DEFAULT getutcdate() NOT NULL,
     CONSTRAINT PK_MerchantTransactions_Id PRIMARY KEY (Id),
     CONSTRAINT FK_MerchantTransactions_MerchantId_Users_Id FOREIGN KEY (MerchantId) REFERENCES Users(Id),
-    CONSTRAINT FK_MerchantTransactions_PayerUserId_Users_Id FOREIGN KEY (PayerUserId) REFERENCES Users(Id),
+    CONSTRAINT FK_MerchantTransactions_PayerId_Users_Id FOREIGN KEY (PayerId) REFERENCES Users(Id),
     CONSTRAINT FK_MerchantTransactions_SubscriptionId_MerchantSubscriptions_Id FOREIGN KEY (SubscriptionId) REFERENCES MerchantSubscriptions(Id),
     CONSTRAINT FK_MerchantTransactions_PaymentRequestId_MerchantPaymentRequests_Id FOREIGN KEY (PaymentRequestId) REFERENCES MerchantPaymentRequests(Id),
     CONSTRAINT FK_MerchantTransactions_PromiseTransactionId_PromiseTransactions_Id FOREIGN KEY (PromiseTransactionId) REFERENCES PromiseTransactions(Id),

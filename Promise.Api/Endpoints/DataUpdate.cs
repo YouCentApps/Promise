@@ -1,4 +1,4 @@
-﻿namespace Promise.Api;
+﻿namespace Promise.Api.Endpoints;
 internal static class DataUpdate
 {
     public static async Task<IResult> Run(HttpContext context)

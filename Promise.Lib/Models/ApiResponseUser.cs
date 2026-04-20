@@ -1,4 +1,4 @@
-﻿namespace Promise.Lib;
+﻿namespace Promise.Lib.Models;
 
 public class ApiResponseUser : ApiResponse
 {

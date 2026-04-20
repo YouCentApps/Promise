@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace Promise.Lib;
+namespace Promise.Lib.Models;
 
 public class ApiResponseUserTransactions : ApiResponseUser
 {

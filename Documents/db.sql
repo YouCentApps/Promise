@@ -290,7 +290,7 @@ CREATE TABLE MerchantSubscriptions
 );
 
 CREATE NONCLUSTERED INDEX IX_MerchantSubscriptions_MerchantId ON MerchantSubscriptions (MerchantId ASC);
-CREATE NONCLUSTERED INDEX IX_MerchantSubscriptions_SubscriberUserId ON MerchantSubscriptions (SubscriberUserId ASC);
+CREATE NONCLUSTERED INDEX IX_MerchantSubscriptions_SubscriberId ON MerchantSubscriptions (SubscriberId ASC);
 
 
 -- MerchantTransactions: audit log of every charge and refund
@@ -316,7 +316,7 @@ CREATE TABLE MerchantTransactions
 );
 
 CREATE NONCLUSTERED INDEX IX_MerchantTransactions_MerchantId ON MerchantTransactions (MerchantId ASC);
-CREATE NONCLUSTERED INDEX IX_MerchantTransactions_PayerUserId ON MerchantTransactions (PayerUserId ASC);
+CREATE NONCLUSTERED INDEX IX_MerchantTransactions_PayerId ON MerchantTransactions (PayerId ASC);
 CREATE NONCLUSTERED INDEX IX_MerchantTransactions_SubscriptionId ON MerchantTransactions (SubscriptionId ASC);
 
 

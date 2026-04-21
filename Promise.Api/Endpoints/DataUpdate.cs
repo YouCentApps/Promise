@@ -1,6 +1,10 @@
-﻿namespace Promise.Api.Endpoints;
+﻿using System.Text.Json;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Promise.Api.Endpoints;
 internal static class DataUpdate
 {
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Top-level endpoint handler must catch all exceptions to ensure proper HTTP response")]
     public static async Task<IResult> Run(HttpContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -12,14 +16,12 @@ internal static class DataUpdate
             {
                 userData = await context.Request.ReadFromJsonAsync<UserData>().ConfigureAwait(false);
             }
-#pragma warning disable CA1031
-            catch (Exception ex)
+            catch (JsonException ex)
             {
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 MainLogger.LogError("Error reading user and personal data from request : " + ex);
-                return Results.Json(new { success = false, error = "Server error..." });
+                return Results.Json(new { success = false, error = "Invalid JSON format" });
             }
-#pragma warning restore CA1031
 
             var user = userData?.User;
             if (userData is null || user is null || user.Id < 1 ||
@@ -135,13 +137,12 @@ internal static class DataUpdate
                 Error = ""
             });
         }
-#pragma warning disable CA1031
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error updating user data : " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
+
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace Promise.Native;
+﻿namespace Promise.Native.Services;
 
-internal sealed class NativeSettings(IMyEnvironment myEnvironment) : ISettings
+public sealed class NativeSettings(IMyEnvironment myEnvironment) : ISettings
 {
     private readonly IMyEnvironment myEnv = myEnvironment;
     private static bool IsAndroid() => DeviceInfo.Current.Platform == DevicePlatform.Android;

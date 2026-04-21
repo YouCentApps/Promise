@@ -28,12 +28,9 @@
         <ApplicationDisplayVersion>2.0.11</ApplicationDisplayVersion>
         <ApplicationVersion>50</ApplicationVersion>
 
-        <!-- CA1416: MAUI platform APIs; 
-		CA1812: DI types; 
-		CA1724: SDK namespace conflicts; 
-		CA1515: XAML must be public; 
-		CA1711: AppDelegate required for iOS -->
-        <NoWarn>$(NoWarn);CA1812;CA1812;CA1724;CA1515;CA1711</NoWarn>
+        <!-- 
+		CA1515: XAML must be public;  -->
+        <NoWarn>$(NoWarn);CA1515</NoWarn>
 
         <WindowsPackageType>MSIX</WindowsPackageType>
 

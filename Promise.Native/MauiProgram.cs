@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Promise.Native.Services;
 
 namespace Promise.Native;
 

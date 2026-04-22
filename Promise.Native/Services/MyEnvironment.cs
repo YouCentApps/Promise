@@ -1,4 +1,6 @@
-﻿public class MyEnvironment : IMyEnvironment
+﻿namespace Promise.Native.Services;
+
+public sealed class MyEnvironment : IMyEnvironment
 {
 
     public const string Prod = "Production";

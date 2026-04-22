@@ -1,19 +1,15 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Promise.Lib;
-using System.Text;
+namespace Promise.Api.Endpoints;
 
-namespace Promise.Api;
-
-public static class RestoreAccessUseTel
+internal static class RestoreAccessUseTel
 {
     private static string errorReason = string.Empty;
     public static async Task<IResult> Run(HttpContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
-            var request = await context.Request.ReadFromJsonAsync<RestoreAccessInfo>();
+            var request = await context.Request.ReadFromJsonAsync<RestoreAccessInfo>().ConfigureAwait(false);
 
             if (request is null || string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.UseData))
             {
@@ -21,14 +17,14 @@ public static class RestoreAccessUseTel
                 return Results.Json(new { success = false, error = "Username and telephone number are required." });
             }
 
-            var user = await db.Users.FirstOrDefaultAsync(u => u.Login == request.Username);
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Login == request.Username).ConfigureAwait(false);
             if (user is null)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 return Results.Json(new { success = false, error = "User not found." });
             }
 
-            var personalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == user.Id);
+            var personalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == user.Id).ConfigureAwait(false);
             if (personalData is null || string.IsNullOrEmpty(personalData.TelHash))
             {
                 return Results.Json(new { success = false, error = "Sorry, you did not save a telephone number before." });
@@ -37,7 +33,7 @@ public static class RestoreAccessUseTel
             var telHash = Security.GetHash(request.UseData + personalData.Salt);
             if (telHash != personalData.TelHash)
             {
-                await TrackFailedAttempt(db, user.Id);
+                await TrackFailedAttempt(db, user.Id).ConfigureAwait(false);
                 return Results.Json(new { success = false, error = "Incorrect telephone number.", maskedTel = personalData.TelMasked });
             }
 
@@ -45,7 +41,7 @@ public static class RestoreAccessUseTel
             var newPasswordHash = Security.GetPasswordHash(newPassword, user.Salt!);
             user.Password = newPasswordHash;
 
-            var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == user.Id);
+            var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == user.Id).ConfigureAwait(false);
             if (accessRestore != null)
             {
                 accessRestore.UseSecretTryNumber = 0;
@@ -58,7 +54,7 @@ public static class RestoreAccessUseTel
             }
 
             db.Users.Update(user);
-            await db.SaveChangesAsync();
+            await db.SaveChangesAsync().ConfigureAwait(false);
 
             var mailSettings = context.RequestServices.GetRequiredService<IOptions<MailSettings>>();
             var mailSender = new MailSender(mailSettings);
@@ -71,21 +67,23 @@ public static class RestoreAccessUseTel
                 $" It must be now sent via SMS or massenger or communicated via phone call ASAP!"
             );
 
-            await mailSender.SendAsync(adminMailData);
+            await mailSender.SendAsync(adminMailData).ConfigureAwait(false);
 
             return Results.Json(new { success = true });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             MainLogger.LogError($"An error occurred while restoring access. Exception: {ex.Message}");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Something went wrong... " + errorReason });
         }
+#pragma warning restore CA1031
     }
 
     private static async Task TrackFailedAttempt(PromiseDb db, long userId)
     {
-        var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == userId);
+        var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == userId).ConfigureAwait(false);
         if (accessRestore == null)
         {
             accessRestore = new AccessRestore
@@ -102,7 +100,7 @@ public static class RestoreAccessUseTel
             accessRestore.UseTelTryDate = DateTime.UtcNow;
             db.Set<AccessRestore>().Update(accessRestore);
         }
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync().ConfigureAwait(false);
 
         if (accessRestore.UseTelTryNumber >= 3)
         {

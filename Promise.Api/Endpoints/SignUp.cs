@@ -1,27 +1,28 @@
-﻿using Microsoft.Extensions.Options;
-using Promise.Lib;
-namespace Promise.Api;
+﻿namespace Promise.Api.Endpoints;
 
-public static class SignUp
+internal static class SignUp
 {
     public static async Task<IResult> Run(HttpContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
             User? user = null;
             try
             {
-                user = await context.Request.ReadFromJsonAsync<User>();
+                user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             }
+#pragma warning disable CA1031
             catch (Exception ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user from signup request : " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
+#pragma warning restore CA1031
             if (user is null || user.Login is null || user.Password is null ||
-                user.Login.Length < Policy.MinimumUsernameLength || user.Password.Length < Policy.MinimumPasswordLength)
+                user.Login.Length < AppPolicy.MinimumUsernameLength || user.Password.Length < AppPolicy.MinimumPasswordLength)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 return Results.Json(new { success = false, error = "No data or wrong data provided" });
@@ -42,7 +43,7 @@ public static class SignUp
                 CreationDate = DateTime.Now
             };
             db.Users.Add(newUser);
-            var records = await db.SaveChangesAsync();
+            var records = await db.SaveChangesAsync().ConfigureAwait(false);
             dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
             if (records > 0 && dbUser != null)
             {
@@ -66,14 +67,14 @@ public static class SignUp
                     IsDarkTheme = false
                 };
                 db.UserSettings.Add(settings);
-                records = await db.SaveChangesAsync();
+                records = await db.SaveChangesAsync().ConfigureAwait(false);
                 if (records < 3)
                 {
                     db.Users.Remove(dbUser);
                     db.Balances.Remove(balance);
                     db.PromiseLimits.Remove(limit);
                     db.UserSettings.Remove(settings);
-                    await db.SaveChangesAsync();
+                    await db.SaveChangesAsync().ConfigureAwait(false);
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     MainLogger.LogError("Error saving user related data to the DB");
                     return Results.Json(new { success = false, error = "Server error..." });
@@ -87,6 +88,7 @@ public static class SignUp
             }
             context.Response.StatusCode = StatusCodes.Status202Accepted;
 
+            #pragma warning disable CA1031
             try
             {
                 var mailSettings = context.RequestServices.GetRequiredService<IOptions<MailSettings>>();
@@ -100,6 +102,7 @@ public static class SignUp
             {
                 MainLogger.LogError($"Error sending e-mail about sign up with username {user.Login}: " + ex);
             }
+#pragma warning restore CA1031
 
             return Results.Json(new ApiResponseUser
             {
@@ -109,11 +112,13 @@ public static class SignUp
                 Login = dbUser.Login
             });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error signing up user : " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
+#pragma warning restore CA1031
     }
 }

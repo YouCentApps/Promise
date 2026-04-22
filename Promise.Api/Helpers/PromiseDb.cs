@@ -1,11 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace Promise.Api.Helpers;
 
-namespace Promise.Api;
-
-public class PromiseDb : DbContext
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by EF Core dependency injection")]
+internal sealed class PromiseDb(DbContextOptions<PromiseDb> options) : DbContext(options)
 {
-    public PromiseDb(DbContextOptions<PromiseDb> options) : base(options) { }
-
     public DbSet<Currency> Currencies { get; set; }
     public DbSet<Language> Languages { get; set; }
     public DbSet<User> Users { get; set; }
@@ -17,8 +14,19 @@ public class PromiseDb : DbContext
     public DbSet<PersonalData> PersonalData { get; set; }
     public DbSet<AccessRestore> AccessRestore { get; set; }
 
+    // Merchant tables
+    public DbSet<MerchantPaymentRequestType> MerchantPaymentRequestTypes { get; set; }
+    public DbSet<MerchantPaymentRequestStatus> MerchantPaymentRequestStatuses { get; set; }
+    public DbSet<MerchantSubscriptionStatus> MerchantSubscriptionStatuses { get; set; }
+    public DbSet<MerchantTransactionType> MerchantTransactionTypes { get; set; }
+    public DbSet<Merchant> Merchants { get; set; }
+    public DbSet<MerchantPaymentRequest> MerchantPaymentRequests { get; set; }
+    public DbSet<MerchantSubscription> MerchantSubscriptions { get; set; }
+    public DbSet<MerchantTransaction> MerchantTransactions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.Entity<Currency>().HasKey(c => c.Id);
         modelBuilder.Entity<Language>().HasKey(l => l.Id);
         modelBuilder.Entity<User>().HasKey(u => u.Id);
@@ -79,5 +87,79 @@ public class PromiseDb : DbContext
             .HasOne<User>()
             .WithOne()
             .HasForeignKey<AccessRestore>(ar => ar.UserId);
+
+        // Merchant lookup tables
+        modelBuilder.Entity<MerchantPaymentRequestType>().HasKey(t => t.Id);
+        modelBuilder.Entity<MerchantPaymentRequestStatus>().HasKey(s => s.Id);
+        modelBuilder.Entity<MerchantSubscriptionStatus>().HasKey(s => s.Id);
+        modelBuilder.Entity<MerchantTransactionType>().HasKey(t => t.Id);
+
+        // Merchant
+        modelBuilder.Entity<Merchant>().HasKey(m => m.UserId);
+        modelBuilder.Entity<Merchant>()
+            .HasOne<User>()
+            .WithOne()
+            .HasForeignKey<Merchant>(m => m.UserId);
+
+        // MerchantPaymentRequest
+        modelBuilder.Entity<MerchantPaymentRequest>().HasKey(r => r.Id);
+        modelBuilder.Entity<MerchantPaymentRequest>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(r => r.MerchantId);
+        modelBuilder.Entity<MerchantPaymentRequest>()
+            .HasOne<MerchantPaymentRequestType>()
+            .WithMany()
+            .HasForeignKey(r => r.TypeId);
+        modelBuilder.Entity<MerchantPaymentRequest>()
+            .HasOne<MerchantPaymentRequestStatus>()
+            .WithMany()
+            .HasForeignKey(r => r.StatusId);
+
+        // MerchantSubscription
+        modelBuilder.Entity<MerchantSubscription>().HasKey(s => s.Id);
+        modelBuilder.Entity<MerchantSubscription>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(s => s.MerchantId);
+        modelBuilder.Entity<MerchantSubscription>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(s => s.SubscriberId);
+        modelBuilder.Entity<MerchantSubscription>()
+            .HasOne<MerchantPaymentRequest>()
+            .WithMany()
+            .HasForeignKey(s => s.PaymentRequestId);
+        modelBuilder.Entity<MerchantSubscription>()
+            .HasOne<MerchantSubscriptionStatus>()
+            .WithMany()
+            .HasForeignKey(s => s.StatusId);
+
+        // MerchantTransaction
+        modelBuilder.Entity<MerchantTransaction>().HasKey(t => t.Id);
+        modelBuilder.Entity<MerchantTransaction>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(t => t.MerchantId);
+        modelBuilder.Entity<MerchantTransaction>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(t => t.PayerId);
+        modelBuilder.Entity<MerchantTransaction>()
+            .HasOne<MerchantSubscription>()
+            .WithMany()
+            .HasForeignKey(t => t.SubscriptionId);
+        modelBuilder.Entity<MerchantTransaction>()
+            .HasOne<MerchantPaymentRequest>()
+            .WithMany()
+            .HasForeignKey(t => t.PaymentRequestId);
+        modelBuilder.Entity<MerchantTransaction>()
+            .HasOne<PromiseTransaction>()
+            .WithMany()
+            .HasForeignKey(t => t.PromiseTransactionId);
+        modelBuilder.Entity<MerchantTransaction>()
+            .HasOne<MerchantTransactionType>()
+            .WithMany()
+            .HasForeignKey(t => t.TypeId);
     }
 }

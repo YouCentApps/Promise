@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-namespace Promise.Api;
+﻿namespace Promise.Api.Endpoints;
 
-public static class UserInfo
+internal static class UserInfo
 {
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
@@ -19,14 +19,16 @@ public static class UserInfo
             User? user = null;
             try
             {
-                user = await context.Request.ReadFromJsonAsync<User>();
+                user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             }
+#pragma warning disable CA1031
             catch (Exception ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user from signin request : " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
+#pragma warning restore CA1031
             if (user is null || user.Login is null || user.Login.Length < 1)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -45,19 +47,19 @@ public static class UserInfo
                 return Results.Json(new { success = false, error = "Invalid token" });
             }
 
-            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
+            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login).ConfigureAwait(false);
             if (dbUser is null)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 return Results.Json(new { success = false, error = "User not found" });
             }
-            var balance = await db.Balances.FirstOrDefaultAsync(b => b.UserId == dbUser.Id);
+            var balance = await db.Balances.FirstOrDefaultAsync(b => b.UserId == dbUser.Id).ConfigureAwait(false);
             if (balance is null)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 return Results.Json(new { success = false, error = "Balance not found" });
             }
-            var limit = await db.PromiseLimits.FirstOrDefaultAsync(l => l.UserId == dbUser.Id);
+            var limit = await db.PromiseLimits.FirstOrDefaultAsync(l => l.UserId == dbUser.Id).ConfigureAwait(false);
             if (limit is null)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -74,11 +76,13 @@ public static class UserInfo
                 PromiseLimit = limit.Cents
             });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error getting user info : " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
+#pragma warning restore CA1031
     }
 }

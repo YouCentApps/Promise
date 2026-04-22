@@ -1,4 +1,6 @@
-public class Policy
+namespace Promise.Common;
+
+public static class AppPolicy
 {
     public const int MinimumPasswordLength = 8;
 

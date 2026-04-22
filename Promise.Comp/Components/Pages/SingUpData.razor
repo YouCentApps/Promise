@@ -1,4 +1,4 @@
-﻿@using Promise.Comp.Components.Layout
+@using Promise.Comp.Components.Layout
 @layout MainLayoutNotSignedIn
 
 @page "/signupdata"
@@ -145,7 +145,7 @@
         {
             errorMessage = "Secret word must be at most 40 characters long.";
         }
-        else if (!string.IsNullOrWhiteSpace(SecretWord) && !Regex.IsMatch(SecretWord, Policy.SecretWordRegex))
+        else if (!string.IsNullOrWhiteSpace(SecretWord) && !Regex.IsMatch(SecretWord, AppPolicy.SecretWordRegex))
         {
             errorMessage = "Secret word  can consist only of uppercase letters, lowercase letters and digits.";
         }

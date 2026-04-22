@@ -1,26 +1,27 @@
-using Microsoft.EntityFrameworkCore;
+namespace Promise.Api.Endpoints;
 
-namespace Promise.Api;
-
-public static class UpdateCurrencyPreference
+internal static class UpdateCurrencyPreference
 {
     public static async Task<IResult> Run(HttpContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
-            
+
             CurrencyPreferenceUpdate? request = null;
             try
             {
-                request = await context.Request.ReadFromJsonAsync<CurrencyPreferenceUpdate>();
+                request = await context.Request.ReadFromJsonAsync<CurrencyPreferenceUpdate>().ConfigureAwait(false);
             }
+#pragma warning disable CA1031
             catch (Exception ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading currency preference update request: " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
+#pragma warning restore CA1031
 
             var user = request?.User;
             if (request is null || user is null || user.Id < 1 ||
@@ -33,7 +34,7 @@ public static class UpdateCurrencyPreference
             }
 
             // Authenticate user
-            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
+            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login).ConfigureAwait(false);
             if (dbUser is null || dbUser.Password is null || dbUser.Salt is null || dbUser.Id != user.Id)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -48,8 +49,8 @@ public static class UpdateCurrencyPreference
             }
 
             // Update currency preference
-            bool updated = await CurrencyService.UpdateUserCurrencyAsync(db, user.Id, request.CurrencyId);
-            
+            bool updated = await CurrencyService.UpdateUserCurrencyAsync(db, user.Id, request.CurrencyId).ConfigureAwait(false);
+
             if (!updated)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -58,11 +59,13 @@ public static class UpdateCurrencyPreference
 
             return Results.Json(new { success = true });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error in UpdateCurrencyPreference: " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
+#pragma warning restore CA1031
     }
 }

@@ -1,10 +1,9 @@
-﻿using System.Reflection.PortableExecutable;
-
-namespace Promise.Api;
-public class DeleteUser
+﻿namespace Promise.Api.Endpoints;
+internal static class DeleteUser
 {
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             if (jwtSecret is null)
@@ -13,7 +12,7 @@ public class DeleteUser
                 MainLogger.LogError("No secret provided for JWT");
                 return Results.Json(new { success = false, error = "Server error..." });
             }
-            var user = await context.Request.ReadFromJsonAsync<User>();
+            var user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             if (user is null || user.Login is null || user.Password is null ||
                 user.Login.Length < 1 || user.Password.Length < 1)
             {
@@ -69,12 +68,12 @@ public class DeleteUser
             var transactionsCount = db.PromiseTransactions.Count(t => t.SenderId == dbUser.Id || t.ReceiverId == dbUser.Id);
             if (transactionsCount > 0)
             {
-                var deletedData = db.SaveChanges();
+                var deletedData = await db.SaveChangesAsync().ConfigureAwait(false);
                 var checkData = db.PersonalData.FirstOrDefault(pd => pd.UserId == dbUser.Id);
                 if (deletedData > 0 && checkData is null)
                 {
                     dbUser.Login = "(deleted)" + dbUser.Login;
-                    var markedDeleted = db.SaveChanges();
+                    var markedDeleted = await db.SaveChangesAsync().ConfigureAwait(false);
                     if (markedDeleted > 0)
                     {
                         context.Response.StatusCode = StatusCodes.Status200OK;
@@ -95,7 +94,7 @@ public class DeleteUser
                 }
             }
             db.Users.Remove(dbUser);
-            var deleted = db.SaveChanges();
+            var deleted = await db.SaveChangesAsync().ConfigureAwait(false);
             if (deleted > 0)
             {
                 context.Response.StatusCode = StatusCodes.Status200OK;
@@ -109,11 +108,13 @@ public class DeleteUser
 
             }
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             MainLogger.LogError("Error deleting user and its data for delete user request (400) : " + ex.Message);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Error deleting user and its data, please try again later..." });
         }
+#pragma warning restore CA1031
     }
 }

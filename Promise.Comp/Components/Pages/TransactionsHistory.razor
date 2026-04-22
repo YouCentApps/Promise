@@ -1,7 +1,8 @@
-﻿@page "/transactionshistory"
+@page "/transactionshistory"
 @using System.Text.Json
 @using System.Text
 @using System.Net.Http.Headers
+@using Promise.Common.Models
 @using Promise.Comp.Components.Shared
 @inject AppState appState
 @inject NavigationManager navigationManager
@@ -196,7 +197,7 @@ private bool showInUserCurrency = false;
             {
                 if (responseObject is not null && responseObject.Success && responseObject.Transactions is not null)
                 {
-                    transactions = responseObject.Transactions;
+                    transactions = [.. responseObject.Transactions];
                     return transactions;
                 }
                 else

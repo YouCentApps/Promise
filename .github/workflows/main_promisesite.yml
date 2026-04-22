@@ -7,6 +7,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Promise.Web/**'
+      - 'Promise.Comp/**'
+      - 'Promise.Common/**'
   workflow_dispatch:
 
 jobs:

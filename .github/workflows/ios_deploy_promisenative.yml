@@ -12,6 +12,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Decode and import the provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > profile.mobileprovision
+          mv profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${{ secrets.IOS_PROVISIONING_PROFILE_UUID }}.mobileprovision
+          
+      - name: Decode and import certificate
+        run: |
+          echo "${{ secrets.IOS_CERTIFICATE_BASE64 }}" | base64 --decode > certificate.p12
+          security create-keychain -p "" build.keychain
+          security import certificate.p12 -k ~/Library/Keychains/build.keychain -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s ~/Library/Keychains/build.keychain
+          security default-keychain -s ~/Library/Keychains/build.keychain
+          security unlock-keychain -p "" ~/Library/Keychains/build.keychain
+          rm certificate.p12
         
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -25,6 +41,10 @@ jobs:
         run: dotnet restore Promise.Native/Promise.Native.csproj -p:RuntimeIdentifier=ios-arm64
 
       - name: Publish MAUI iOS App
-        run: dotnet publish Promise.Native/Promise.Native.csproj -c Release -f net10.0-ios -r ios-arm64 --no-restore
+        run: dotnet publish Promise.Native/Promise.Native.csproj -c Release -f net10.0-ios -r ios-arm64 --no-restore /p:BuildIpa=true /p:CodesignKey="${{ secrets.IOS_CERTIFICATE_NAME }}" /p:CodesignProvision="${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}"
+
+
+
+          
 
     

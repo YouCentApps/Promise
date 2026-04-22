@@ -1,23 +1,26 @@
-﻿using Promise.Api;
+﻿namespace Promise.Api.Endpoints;
 
-public static class SignIn
+internal static class SignIn
 {
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
+        ArgumentNullException.ThrowIfNull(context);
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
             User? user = null;
             try
             {
-                user = await context.Request.ReadFromJsonAsync<User>();
+                user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             }
+#pragma warning disable CA1031
             catch (Exception ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user from signin request : " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
+#pragma warning restore CA1031
             if (user is null || user.Login is null || user.Password is null ||
                 user.Login.Length < 1 || user.Password.Length < 1)
             {
@@ -60,11 +63,13 @@ public static class SignIn
                 Login = dbUser.Login
             });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error signing in user : " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
+#pragma warning restore CA1031
     }
 }

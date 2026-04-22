@@ -1,4 +1,6 @@
-﻿public class AppState
+﻿namespace Promise.Comp;
+
+public class AppState
 {
     public bool IsSignedIn { get; set; }
 

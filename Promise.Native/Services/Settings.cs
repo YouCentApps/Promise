@@ -1,12 +1,13 @@
-﻿
-public class Settings(IMyEnvironment myEnvironment) : ISettings
+﻿namespace Promise.Native.Services;
+
+public sealed class NativeSettings(IMyEnvironment myEnvironment) : ISettings
 {
     private readonly IMyEnvironment myEnv = myEnvironment;
-    private bool IsAndroid() => DeviceInfo.Current.Platform == DevicePlatform.Android;
-    private bool IsiOS() => DeviceInfo.Current.Platform == DevicePlatform.iOS;
-    private bool IsmacOS() => DeviceInfo.Current.Platform == DevicePlatform.macOS;
-    private bool IsMacCatalyst() => DeviceInfo.Current.Platform == DevicePlatform.MacCatalyst;
-    private bool IsWinUI() => DeviceInfo.Current.Platform == DevicePlatform.WinUI;
+    private static bool IsAndroid() => DeviceInfo.Current.Platform == DevicePlatform.Android;
+    private static bool IsiOS() => DeviceInfo.Current.Platform == DevicePlatform.iOS;
+    private static bool IsmacOS() => DeviceInfo.Current.Platform == DevicePlatform.macOS;
+    private static bool IsMacCatalyst() => DeviceInfo.Current.Platform == DevicePlatform.MacCatalyst;
+    private static bool IsWinUI() => DeviceInfo.Current.Platform == DevicePlatform.WinUI;
 
     public string ApiUrl
     {

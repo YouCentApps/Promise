@@ -1,4 +1,6 @@
-﻿public class ApiResponseUserAccessRestore : ApiResponseUser
+﻿namespace Promise.Common.Models;
+
+public class ApiResponseUserAccessRestore : ApiResponseUser
 {
     public string? NewPassword { get; set; }
     public string? MaskedEmail { get; set; }

@@ -1,4 +1,4 @@
-﻿internal class CountryCode
+﻿internal sealed class CountryCode
 {
     public string? Name { get; set; }
     public string? Code { get; set; }

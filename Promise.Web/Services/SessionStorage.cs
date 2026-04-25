@@ -1,16 +1,11 @@
 ﻿using Microsoft.JSInterop;
 
-namespace Promise.Web;
+namespace Promise.Web.Services;
 
 [SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
-internal sealed class SessionStorage : ISessionStorage
+internal sealed class SessionStorage(IJSRuntime jsRuntime) : ISessionStorage
 {
-    private readonly IJSRuntime _jsRuntime;
-
-    public SessionStorage(IJSRuntime jsRuntime)
-    {
-        _jsRuntime = jsRuntime;
-    }
+    private readonly IJSRuntime _jsRuntime = jsRuntime;
 
     public async Task<T> GetAsync<T>(string key)
     {

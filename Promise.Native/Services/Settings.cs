@@ -1,5 +1,6 @@
 ﻿namespace Promise.Native.Services;
 
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
 internal sealed class NativeSettings(IMyEnvironment myEnvironment) : ISettings
 {
     private readonly IMyEnvironment myEnv = myEnvironment;

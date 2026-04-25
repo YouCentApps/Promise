@@ -1,4 +1,4 @@
-﻿namespace Promise.Web;
+﻿namespace Promise.Web.Services;
 
 [SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
 internal sealed class Settings(IMyEnvironment myEnvironment) : ISettings

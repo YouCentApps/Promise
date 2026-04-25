@@ -2,6 +2,7 @@
 
 namespace Promise.Native.Services;
 
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
 internal sealed class SessionStorage(IJSRuntime jsRuntime) : ISessionStorage
 {
     private readonly IJSRuntime _jsRuntime = jsRuntime;

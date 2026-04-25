@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 namespace Promise.Api.Endpoints;
 internal static class DataUpdate
 {
-    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Top-level endpoint handler must catch all exceptions to ensure proper HTTP response")]
     public static async Task<IResult> Run(HttpContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -137,7 +136,7 @@ internal static class DataUpdate
                 Error = ""
             });
         }
-        catch (Exception ex)
+        catch (DbUpdateException ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error updating user data : " + ex);

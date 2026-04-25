@@ -2,7 +2,7 @@
 
 namespace Promise.Native.Services;
 
-public sealed class SessionStorage(IJSRuntime jsRuntime) : ISessionStorage
+internal sealed class SessionStorage(IJSRuntime jsRuntime) : ISessionStorage
 {
     private readonly IJSRuntime _jsRuntime = jsRuntime;
 

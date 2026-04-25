@@ -2,7 +2,7 @@
 
 namespace Promise.Web;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
 internal sealed class SessionStorage : ISessionStorage
 {
     private readonly IJSRuntime _jsRuntime;

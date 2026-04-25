@@ -19,7 +19,7 @@
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
         <!-- Display name -->
-        <ApplicationTitle>YouCent</ApplicationTitle>
+        <ApplicationTitle>YouCent Promise</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>app.YouCent</ApplicationId>
@@ -27,10 +27,6 @@
         <!-- Versions -->
         <ApplicationDisplayVersion>2.0.11</ApplicationDisplayVersion>
         <ApplicationVersion>50</ApplicationVersion>
-
-        <!-- 
-		CA1515: XAML must be public;  -->
-        <NoWarn>$(NoWarn);CA1515</NoWarn>
 
         <WindowsPackageType>MSIX</WindowsPackageType>
 

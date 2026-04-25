@@ -1,6 +1,6 @@
 ﻿namespace Promise.Native.Services;
 
-public sealed class NativeNavigationManager : INavigationManager
+internal sealed class NativeNavigationManager : INavigationManager
 {
     public Task NavigateToAsync(string route)
     {

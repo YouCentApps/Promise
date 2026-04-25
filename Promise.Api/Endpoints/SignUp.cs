@@ -90,7 +90,6 @@ internal static class SignUp
             }
             context.Response.StatusCode = StatusCodes.Status202Accepted;
 
-            #pragma warning disable CA1031
             try
             {
                 var mailSettings = context.RequestServices.GetRequiredService<IOptions<MailSettings>>();

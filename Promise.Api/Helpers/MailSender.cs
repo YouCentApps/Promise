@@ -15,7 +15,7 @@ internal sealed class MailSender
         _settings = settings.Value;
     }
 
-    internal class EmailSendException : Exception
+    internal sealed class EmailSendException : Exception
     {
         public EmailSendException(string message, Exception innerException)
             : base(message, innerException) { }

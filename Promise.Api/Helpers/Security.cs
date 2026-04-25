@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace Promise.Api;
+namespace Promise.Api.Helpers;
 
 internal static class Security
 {
@@ -19,10 +19,8 @@ internal static class Security
 
     public static string GetHash(string input)
     {
-        using (var crypto = SHA256.Create())
-        {
-            return GetCryptoHash(crypto, input);
-        }
+        using var crypto = SHA256.Create();
+        return GetCryptoHash(crypto, input);
     }
 
 
@@ -124,12 +122,10 @@ internal static class Security
         {
             MainLogger.Log("Token validation failed: " + ex.Message);
         }
-#pragma warning disable CA1031
-        catch (Exception e)
+        catch (InvalidOperationException e)
         {
-            MainLogger.Log("JWT exception " + e);
+            MainLogger.Log("JWT exception " + e.Message);
         }
-#pragma warning restore CA1031
         return payload;
     }
 

@@ -1,4 +1,7 @@
-﻿namespace Promise.Api.Endpoints;
+﻿using System.Data.Common;
+using System.Text.Json;
+
+namespace Promise.Api.Endpoints;
 
 internal static class UserInfo
 {
@@ -21,14 +24,12 @@ internal static class UserInfo
             {
                 user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             }
-#pragma warning disable CA1031
-            catch (Exception ex)
+            catch (JsonException ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user from signin request : " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
-#pragma warning restore CA1031
             if (user is null || user.Login is null || user.Login.Length < 1)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -76,13 +77,11 @@ internal static class UserInfo
                 PromiseLimit = limit.Cents
             });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error getting user info : " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

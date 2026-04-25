@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace Promise.Api.Endpoints;
 
 internal static class MerchantRegister
@@ -72,13 +74,11 @@ internal static class MerchantRegister
                 IsActive = true
             });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error in MerchantRegister: " + ex);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Promise.Api.Endpoints;
+﻿using System.Data.Common;
+
+namespace Promise.Api.Endpoints;
 internal static class DeleteUser
 {
     public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
@@ -108,13 +110,11 @@ internal static class DeleteUser
 
             }
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error deleting user and its data for delete user request (400) : " + ex.Message);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Error deleting user and its data, please try again later..." });
         }
-#pragma warning restore CA1031
     }
 }

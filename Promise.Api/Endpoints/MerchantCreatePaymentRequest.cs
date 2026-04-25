@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace Promise.Api.Endpoints;
 
 internal static class MerchantCreatePaymentRequest
@@ -67,13 +69,11 @@ internal static class MerchantCreatePaymentRequest
                 SubscriptionExpiresDate = paymentRequest.SubscriptionExpiresDate
             });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error in MerchantCreatePaymentRequest: " + ex);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

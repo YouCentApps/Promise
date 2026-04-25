@@ -1,4 +1,6 @@
-﻿namespace Promise.Api.Endpoints;
+﻿using System.Data.Common;
+
+namespace Promise.Api.Endpoints;
 
 internal static class UpdatePassword
 {
@@ -64,13 +66,11 @@ internal static class UpdatePassword
             }
             return Results.Json(new { success = true, error = "" });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error updating password: " + ex.Message);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error... Please try again later." });
         }
-#pragma warning restore CA1031
     }
 }

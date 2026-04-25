@@ -1,5 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace Promise.Api.Endpoints;
 internal static class DataUpdate
@@ -136,7 +137,7 @@ internal static class DataUpdate
                 Error = ""
             });
         }
-        catch (DbUpdateException ex)
+        catch (DbException ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error updating user data : " + ex);

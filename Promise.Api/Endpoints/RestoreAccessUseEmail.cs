@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace Promise.Api.Endpoints;
 
 internal static class RestoreAccessUseEmail
@@ -64,13 +66,13 @@ internal static class RestoreAccessUseEmail
             var mailSender = new MailSender(mailSettings);
 
             var userMailData = new MailData(
-                new List<string> { personalData.Email! },
+                [personalData.Email!],
                 "Your Temporary YouCent Password",
                 $"Your new temporary password for YouCent App is: {newPassword} <br><br> Please <b>change</b> it after signing in. <br>www.youcent.app"
             );
 
             var adminMailData = new MailData(
-                new List<string> { MailSender.SystemEMail },
+                [MailSender.SystemEMail],
                 "Temporary YouCent Password Sent to the User",
                 $"A new temporary password was sent to {personalData.Email} for username: {user.Login}. <br>The password is: {newPassword}"
             );
@@ -80,14 +82,18 @@ internal static class RestoreAccessUseEmail
 
             return Results.Json(new { success = true });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
+        {
+            MainLogger.LogError($"An error occurred while restoring access. {errorReason} Exception: {ex.Message}");
+            context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+            return Results.Json(new { success = false, error = errorReason });
+        }
+        catch (DbException ex)
         {
             MainLogger.LogError($"An error occurred while restoring access. Exception: {ex.Message}");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Something went wrong... " + errorReason });
         }
-#pragma warning restore CA1031
     }
 
     private static async Task TrackFailedAttempt(PromiseDb db, long userId)

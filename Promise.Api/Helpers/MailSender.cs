@@ -15,6 +15,19 @@ internal sealed class MailSender
         _settings = settings.Value;
     }
 
+    internal class EmailSendException : Exception
+    {
+        public EmailSendException(string message, Exception innerException)
+            : base(message, innerException) { }
+
+        public EmailSendException()
+        {
+        }
+
+        public EmailSendException(string message) : base(message)
+        {
+        }
+    }
 
     public async Task<bool> SendAsync(MailData mailData, CancellationToken ct = default)
     {
@@ -97,15 +110,13 @@ internal sealed class MailSender
             return false;
 
         }
-        #pragma warning disable CA1031
         catch (Exception ex)
         {
             MainLogger.LogError(" MAILKIT ERROR: " + ex.Message + " ======== " + ex.ToString() + " +++++++++ "
             + ex.InnerException?.Message + " ======== " + ex.InnerException?.ToString());
             MainLogger.Log(" MailsSettings: " + _settings.Host + " | " + _settings.UserName + " | " + _settings.Port + " | " + _settings.UseStartTls);
-            return false;
+            throw new EmailSendException("Error sending email", ex);
         }
-#pragma warning restore CA1031
     }
 }
 

@@ -150,7 +150,7 @@ internal sealed class MailData(
 }
 
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by IOptions<MailSettings> dependency injection")]
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by IOptions<MailSettings> dependency injection")]
 internal sealed class MailSettings
 {
     public string? DisplayName { get; set; }

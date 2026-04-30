@@ -1,6 +1,6 @@
 ﻿namespace Promise.Api.Helpers;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by EF Core dependency injection")]
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by EF Core dependency injection")]
 internal sealed class PromiseDb(DbContextOptions<PromiseDb> options) : DbContext(options)
 {
     public DbSet<Currency> Currencies { get; set; }

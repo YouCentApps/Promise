@@ -83,7 +83,7 @@
     private string? password;
     private string? errorMessage;
     private string? successMessage;
-    private string api => settings.ApiUrl;
+    private string api => settings.ApiEndpoint;
 
     protected override async Task OnInitializedAsync()
     {

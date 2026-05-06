@@ -5,7 +5,7 @@ internal sealed class Settings(IMyEnvironment myEnvironment) : ISettings
 {
     private readonly IMyEnvironment myEnv = myEnvironment;
 
-    public string ApiUrl
+    public string ApiEndpoint
     {
         get
         {

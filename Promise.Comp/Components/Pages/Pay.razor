@@ -70,7 +70,7 @@ else if (paymentInfo is not null)
     private bool isProcessing;
     private bool paymentCompleted;
     private long? subscriptionId;
-    private string api => settings.ApiUrl;
+    private string api => settings.ApiEndpoint;
 
     protected override async Task OnInitializedAsync()
     {

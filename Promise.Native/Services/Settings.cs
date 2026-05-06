@@ -10,7 +10,7 @@ internal sealed class NativeSettings(IMyEnvironment myEnvironment) : ISettings
     private static bool IsMacCatalyst() => DeviceInfo.Current.Platform == DevicePlatform.MacCatalyst;
     private static bool IsWinUI() => DeviceInfo.Current.Platform == DevicePlatform.WinUI;
 
-    public string ApiUrl
+    public string ApiEndpoint
     {
         get
         {

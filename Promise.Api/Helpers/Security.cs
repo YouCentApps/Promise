@@ -16,6 +16,8 @@ internal static class Security
     private const int accessTokenLifetimeHours = 24;
     private const string bearerTokenPrefix = "Bearer ";
     private const int saltLengthLimit = 20; // 20 Bytes! (less than 32 characters after Base64 conversion)
+    private const string tokenIssuer = "promise-api";
+    private const string tokenAudience = "promise-client";
 
     public static string GetHash(string input)
     {
@@ -45,7 +47,9 @@ internal static class Security
         {
             Subject = new ClaimsIdentity(claims),
             Expires = expiryTime,
-            SigningCredentials = credentials
+            SigningCredentials = credentials,
+            Issuer = tokenIssuer,
+            Audience = tokenAudience
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -92,17 +96,17 @@ internal static class Security
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
-#pragma warning disable CA5404
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = securityKey,
-                ValidateIssuer = false,
-                ValidateAudience = false,
+                ValidateIssuer = true,
+                ValidIssuer = tokenIssuer,
+                ValidateAudience = true,
+                ValidAudience = tokenAudience,
                 ValidateLifetime = verify,
                 ClockSkew = TimeSpan.Zero
             };
-#pragma warning restore CA5404
 
             var principal = tokenHandler.ValidateToken(jwt, validationParameters, out var validatedToken);
 

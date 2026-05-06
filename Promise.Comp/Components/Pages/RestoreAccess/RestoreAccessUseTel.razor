@@ -57,7 +57,7 @@
     private string? errorMessage;
     private string? successMessage;
     private string selectedCountryCode = "";
-    private string api => settings.ApiUrl;
+    private string api => settings.ApiEndpoint;
 
     private async Task RestoreAccessAsync()
     {

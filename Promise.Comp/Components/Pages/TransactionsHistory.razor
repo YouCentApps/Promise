@@ -139,7 +139,7 @@ private string? username;
 private int limit = 10;
 private DateTime from = DateTime.Now - TimeSpan.FromDays(5000);
 private DateTime to = DateTime.Now;
-private string api => settings.ApiUrl;
+private string api => settings.ApiEndpoint;
 private bool isOldFirst = false;
 private string? errorMessage;
 private bool showInUserCurrency = false;

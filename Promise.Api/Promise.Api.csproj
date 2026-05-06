@@ -5,6 +5,13 @@
     <UserSecretsId>promise-api-secrets</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Documents\**" />
+    <Content Remove="Documents\**" />
+    <EmbeddedResource Remove="Documents\**" />
+    <None Remove="Documents\**" />
+  </ItemGroup>
+
   
 
 
@@ -22,10 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Promise.Common\Promise.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Documents/" />
   </ItemGroup>
 
 

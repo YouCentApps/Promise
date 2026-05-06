@@ -1,3 +1,6 @@
+using System.Data.Common;
+using System.Text.Json;
+
 namespace Promise.Api.Endpoints;
 
 internal static class UpdateCurrencyPreference
@@ -14,14 +17,12 @@ internal static class UpdateCurrencyPreference
             {
                 request = await context.Request.ReadFromJsonAsync<CurrencyPreferenceUpdate>().ConfigureAwait(false);
             }
-#pragma warning disable CA1031
-            catch (Exception ex)
+            catch (JsonException ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading currency preference update request: " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
-#pragma warning restore CA1031
 
             var user = request?.User;
             if (request is null || user is null || user.Id < 1 ||
@@ -59,13 +60,11 @@ internal static class UpdateCurrencyPreference
 
             return Results.Json(new { success = true });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error in UpdateCurrencyPreference: " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

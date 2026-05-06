@@ -1,6 +1,7 @@
 ﻿namespace Promise.Native.Services;
 
-public sealed class NativeNavigationManager : INavigationManager
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
+internal sealed class NativeNavigationManager : INavigationManager
 {
     public Task NavigateToAsync(string route)
     {

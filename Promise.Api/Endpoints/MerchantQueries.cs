@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace Promise.Api.Endpoints;
 
 internal static class MerchantQueries
@@ -38,14 +40,12 @@ internal static class MerchantQueries
 
             return Results.Json(new ApiResponseMerchantList<ApiResponsePaymentRequest> { Success = true, Items = new System.Collections.ObjectModel.Collection<ApiResponsePaymentRequest>(requests) });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error in MerchantQueries.GetPaymentRequests: " + ex);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 
     public static async Task<IResult> GetSubscriptions(HttpContext context)
@@ -82,14 +82,12 @@ internal static class MerchantQueries
 
             return Results.Json(new ApiResponseMerchantList<ApiResponseSubscription> { Success = true, Items = new System.Collections.ObjectModel.Collection<ApiResponseSubscription>(subs) });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error in MerchantQueries.GetSubscriptions: " + ex);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 
     public static async Task<IResult> GetTransactions(HttpContext context)
@@ -125,13 +123,11 @@ internal static class MerchantQueries
 
             return Results.Json(new ApiResponseMerchantList<ApiResponseMerchantTransaction> { Success = true, Items = new System.Collections.ObjectModel.Collection<ApiResponseMerchantTransaction>(txs) });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error in MerchantQueries.GetTransactions: " + ex);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

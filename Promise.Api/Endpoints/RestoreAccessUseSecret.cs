@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace Promise.Api.Endpoints;
 
 internal static class RestoreAccessUseSecret
@@ -58,14 +60,18 @@ internal static class RestoreAccessUseSecret
 
             return Results.Json(new { success = true, newPassword });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
+        {
+            MainLogger.LogError($"An error occurred while restoring access. {errorReason} Exception: {ex.Message}");
+            context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+            return Results.Json(new { success = false, error = errorReason });
+        }
+        catch (DbException ex)
         {
             MainLogger.LogError($"An error occurred while restoring access. Exception: {ex.Message}");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Something went wrong... " + errorReason });
         }
-#pragma warning restore CA1031
     }
 
     private static async Task TrackFailedAttempt(PromiseDb db, long userId)

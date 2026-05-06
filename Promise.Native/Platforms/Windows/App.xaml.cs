@@ -3,6 +3,7 @@
 
 namespace Promise.Native.WinUI;
 
+[SuppressMessage("Maintainability", "CA1515:Consider making public types internal", Justification = "Must be public for XAML binding in MAUI projects")]
 /// <summary>
 /// Provides application-specific behavior to supplement the default Application class.
 /// </summary>

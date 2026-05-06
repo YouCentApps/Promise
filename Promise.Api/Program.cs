@@ -40,8 +40,10 @@ builder.Services.AddOpenApi(options =>
         // Create security requirement using a referenced security scheme
         var securitySchemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("Bearer", document);
 
-        var securityRequirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
-        securityRequirement.Add(securitySchemeRef, new List<string>());
+        var securityRequirement = new Microsoft.OpenApi.OpenApiSecurityRequirement
+        {
+            { securitySchemeRef, new List<string>() }
+        };
 
 
         // Apply to all operations
@@ -50,7 +52,7 @@ builder.Services.AddOpenApi(options =>
             foreach (var operation in pathItem.Operations?.Values ?? Enumerable.Empty<Microsoft.OpenApi.OpenApiOperation>())
             {
                 // Initialize Security collection if null
-                operation.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+                operation.Security ??= [];
                 operation.Security.Add(securityRequirement);
             }
         }

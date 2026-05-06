@@ -1,17 +1,12 @@
 ﻿
 using Microsoft.AspNetCore.Components;
 
-namespace Promise.Web;
+namespace Promise.Web.Services;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
-internal sealed class WebNavigationManager : INavigationManager
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
+internal sealed class WebNavigationManager(NavigationManager navigationManager) : INavigationManager
 {
-    private readonly NavigationManager _navigationManager;
-
-    public WebNavigationManager(NavigationManager navigationManager)
-    {
-        _navigationManager = navigationManager;
-    }
+    private readonly NavigationManager _navigationManager = navigationManager;
 
     public Task NavigateToAsync(string route)
     {

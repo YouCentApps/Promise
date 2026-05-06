@@ -74,7 +74,7 @@ else
     private string? successMessage;
     private bool isLoading = true;
     private bool isCancelling;
-    private string api => settings.ApiUrl;
+    private string api => settings.ApiEndpoint;
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,4 +1,4 @@
-﻿namespace Promise.Api;
+﻿namespace Promise.Api.Helpers;
 
 internal static class Promo
 {

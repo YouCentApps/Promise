@@ -1,6 +1,6 @@
-﻿namespace Promise.Web;
+﻿namespace Promise.Web.Services;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
 internal sealed class MyEnvironment : IMyEnvironment
 {
     public const string Prod = "Production";

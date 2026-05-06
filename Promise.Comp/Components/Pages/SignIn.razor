@@ -55,7 +55,7 @@
     private string? username;
     private string? password;
     private string? errorMessage;
-    private string api => settings.ApiUrl;
+    private string api => settings.ApiEndpoint;
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -1,4 +1,4 @@
-﻿namespace Promise.Common;
+﻿namespace Promise.Common.Interfaces;
 
 public interface IMyEnvironment
 {

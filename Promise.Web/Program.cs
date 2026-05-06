@@ -1,4 +1,3 @@
-using Promise.Web;
 using Promise.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);

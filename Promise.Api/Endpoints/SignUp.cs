@@ -1,4 +1,8 @@
-﻿namespace Promise.Api.Endpoints;
+﻿using System.Data.Common;
+using System.Text.Json;
+using static Promise.Api.Helpers.MailSender;
+
+namespace Promise.Api.Endpoints;
 
 internal static class SignUp
 {
@@ -13,14 +17,12 @@ internal static class SignUp
             {
                 user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             }
-#pragma warning disable CA1031
-            catch (Exception ex)
+            catch (JsonException ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user from signup request : " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
-#pragma warning restore CA1031
             if (user is null || user.Login is null || user.Password is null ||
                 user.Login.Length < AppPolicy.MinimumUsernameLength || user.Password.Length < AppPolicy.MinimumPasswordLength)
             {
@@ -88,7 +90,6 @@ internal static class SignUp
             }
             context.Response.StatusCode = StatusCodes.Status202Accepted;
 
-            #pragma warning disable CA1031
             try
             {
                 var mailSettings = context.RequestServices.GetRequiredService<IOptions<MailSettings>>();
@@ -98,11 +99,10 @@ internal static class SignUp
                 _ = mailSender.SendAsync(data, new CancellationToken()).ConfigureAwait(false);
                 MainLogger.Log($"Sign Up via Web App e-mail must be sent! | Username: {user.Login}");
             }
-            catch (Exception ex)
+            catch (EmailSendException ex)
             {
                 MainLogger.LogError($"Error sending e-mail about sign up with username {user.Login}: " + ex);
             }
-#pragma warning restore CA1031
 
             return Results.Json(new ApiResponseUser
             {
@@ -112,13 +112,11 @@ internal static class SignUp
                 Login = dbUser.Login
             });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error signing up user : " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

@@ -68,7 +68,7 @@ public class ApiResponseMerchantTransaction : ApiResponse
 
 public class ApiResponseMerchantList<T> : ApiResponse
 {
-#pragma warning disable CA2227
-    public System.Collections.ObjectModel.Collection<T>? Items { get; set; }
-#pragma warning restore CA2227
+
+    public System.Collections.ObjectModel.Collection <T>? Items { get; init; }
+
 }

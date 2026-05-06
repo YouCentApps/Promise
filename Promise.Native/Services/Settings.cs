@@ -1,6 +1,7 @@
 ﻿namespace Promise.Native.Services;
 
-public sealed class NativeSettings(IMyEnvironment myEnvironment) : ISettings
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by dependency injection")]
+internal sealed class NativeSettings(IMyEnvironment myEnvironment) : ISettings
 {
     private readonly IMyEnvironment myEnv = myEnvironment;
     private static bool IsAndroid() => DeviceInfo.Current.Platform == DevicePlatform.Android;
@@ -9,7 +10,7 @@ public sealed class NativeSettings(IMyEnvironment myEnvironment) : ISettings
     private static bool IsMacCatalyst() => DeviceInfo.Current.Platform == DevicePlatform.MacCatalyst;
     private static bool IsWinUI() => DeviceInfo.Current.Platform == DevicePlatform.WinUI;
 
-    public string ApiUrl
+    public string ApiEndpoint
     {
         get
         {

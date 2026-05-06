@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace Promise.Api.Endpoints;
 
 internal static class UserSubscriptions
@@ -64,14 +66,12 @@ internal static class UserSubscriptions
 
             return Results.Json(new ApiResponseMerchantList<ApiResponseSubscription> { Success = true, Items = new System.Collections.ObjectModel.Collection<ApiResponseSubscription>(subs) });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error in UserSubscriptions.GetSubscriptions: " + ex);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 
     public static async Task<IResult> CancelSubscription(HttpContext context, string? jwtSecret, long subscriptionId)
@@ -125,13 +125,11 @@ internal static class UserSubscriptions
 
             return Results.Json(new { success = true });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             MainLogger.LogError("Error in UserSubscriptions.CancelSubscription: " + ex);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

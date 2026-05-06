@@ -1,4 +1,7 @@
-﻿namespace Promise.Api.Endpoints;
+﻿using System.Data.Common;
+using System.Text.Json;
+
+namespace Promise.Api.Endpoints;
 
 internal static class SignIn
 {
@@ -13,14 +16,13 @@ internal static class SignIn
             {
                 user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             }
-#pragma warning disable CA1031
-            catch (Exception ex)
+            catch (JsonException ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user from signin request : " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
-#pragma warning restore CA1031
+
             if (user is null || user.Login is null || user.Password is null ||
                 user.Login.Length < 1 || user.Password.Length < 1)
             {
@@ -63,13 +65,11 @@ internal static class SignIn
                 Login = dbUser.Login
             });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error signing in user : " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

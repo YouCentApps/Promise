@@ -1,3 +1,6 @@
+using System.Data.Common;
+using System.Text.Json;
+
 namespace Promise.Api.Endpoints;
 
 internal static class GetUserCurrency
@@ -14,14 +17,12 @@ internal static class GetUserCurrency
             {
                 user = await context.Request.ReadFromJsonAsync<User>().ConfigureAwait(false);
             }
-#pragma warning disable CA1031
-            catch (Exception ex)
+            catch (JsonException ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("Error reading user from get currency request: " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
-#pragma warning restore CA1031
 
             if (user is null || user.Id < 1 || string.IsNullOrWhiteSpace(user.Login))
             {
@@ -71,13 +72,11 @@ internal static class GetUserCurrency
                 availableCurrencies = allCurrencies
             });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
+        catch (DbException ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("Error in GetUserCurrency: " + ex);
             return Results.Json(new { success = false, error = "Server error..." });
         }
-#pragma warning restore CA1031
     }
 }

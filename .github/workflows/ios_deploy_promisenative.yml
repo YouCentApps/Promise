@@ -5,6 +5,9 @@ on:
   push:
     branches: [ ios-deploy ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: macos-26

@@ -3,6 +3,8 @@
   <PropertyGroup>
     <AssemblyVersion>2.0.11</AssemblyVersion>
     <UserSecretsId>promise-api-secrets</UserSecretsId>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-all</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>

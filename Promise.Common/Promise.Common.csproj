@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-all</AnalysisLevel>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="NLog" />

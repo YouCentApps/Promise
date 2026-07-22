@@ -1,6 +1,7 @@
 ﻿namespace Promise.Native;
 
 [SuppressMessage("Maintainability", "CA1515:Consider making public types internal", Justification = "Must be public for XAML binding in MAUI projects")]
+[SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification = "App is the standard application class name in MAUI projects")]
 public partial class App : Application
 {
 	public static string? PendingPaymentToken { get; set; }

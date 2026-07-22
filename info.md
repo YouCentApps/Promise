@@ -20,3 +20,17 @@ P.S. as of 12 of April 2026 after long test on GitHub Actions I must tell
 it took 6 hours and I ran out of minutes and it was not successful
 
 SO... I guess we need to get MAC and then remove it all here )))
+
+
+
+
+
+
+
+
+===================
+
+
+ANDROID release creation command
+
+dotnet publish -f net10.0-android -c Release -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=YouCentAppAndroidKey.keystore -p:AndroidSigningKeyAlias=YouCentAppAndroidKey -p:AndroidSigningKeyPass='!f' -p:AndroidSigningStorePass='!f'

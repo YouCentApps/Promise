@@ -1,6 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
 
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-all</AnalysisLevel>
+  </PropertyGroup>
+
+
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>

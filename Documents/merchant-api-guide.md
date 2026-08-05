@@ -1,12 +1,12 @@
 # Promise Payments — Merchant Integration Guide
-**Version:** 1.0  
-**Date:** 2025-07-14
+**Version:** 1.1  
+**Date:** 2025-04-20
 
 ---
 
 ## Overview
 
-The Promise Payment API lets you accept **YouCent Promise (YCP)** payments from Promise users directly in your application. You can create one-time checkout sessions or recurring subscriptions, and issue full refunds.
+The YouCent Promise Payment API lets you accept **YouCent Promise (YCP)** payments from YouCent Promise users directly in your application. You can create one-time checkout sessions or recurring subscriptions, and issue full refunds.
 
 **1 YCP = 1 cent in the system (AmountCents).** Think of it as: $1.00 = 100 YCP = `amountCents: 100`.
 
@@ -17,8 +17,8 @@ The Promise Payment API lets you accept **YouCent Promise (YCP)** payments from 
 ## Prerequisites
 
 Before you integrate, you need:
-- A **Promise user account** (your merchant account).
-- An **ApiKey** and **ApiSecret** provided to you by the Promise team.
+- A **YouCent Promise user account** (your merchant account).
+- An **ApiKey** and **ApiSecret** provided to you by the YouCent Promise team.
 
 > Keep your `ApiSecret` private and never expose it in client-side code. All requests using your credentials must come from your backend server.
 
@@ -117,13 +117,13 @@ Build the full payment link for your customer:
 https://promiseapi.azurewebsites.net/pay/<token>
 ```
 
-Or, to open the Promise native app directly on mobile (if installed):
+Or, to open the YouCent Promise native app directly on mobile (if installed):
 
 ```
 https://promiseapi.azurewebsites.net/pay/<token>
 ```
 
-The same URL handles both web and deep link — Android and iOS Promise apps are registered to intercept it.
+The same URL handles both web and deep link — Android and iOS YouCent Promise apps are registered to intercept it.
 
 ---
 
@@ -131,8 +131,8 @@ The same URL handles both web and deep link — Android and iOS Promise apps are
 
 You don't need to do anything for this step. After you redirect the customer to the payment URL:
 
-1. The Promise platform shows them the payment details (your merchant name, amount, description).
-2. They sign in to their Promise account if not already signed in.
+1. The YouCent Promise platform shows them the payment details (your merchant name, amount, description).
+2. They sign in to their YouCent Promise account if not already signed in.
 3. They confirm the payment with their password.
 4. For subscriptions, a `MerchantSubscription` is created and the first interval is charged immediately.
 
@@ -297,7 +297,7 @@ All error responses have the same shape:
 | `400` | Bad request — check the `error` field for details |
 | `401` | Invalid or inactive merchant credentials |
 | `404` | Resource not found (payment request, subscription, or transaction) |
-| `500` | Server error — contact Promise support |
+| `500` | Server error — contact YouCent Promise support |
 
 ---
 

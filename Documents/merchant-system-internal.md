@@ -1,6 +1,6 @@
 # Promise Merchant & Payment System — Internal Reference
-**Version:** 1.0  
-**Date:** 2025-07-14  
+**Version:** 1.1  
+**Date:** 2026-04-20  
 **Audience:** Developers, Support, Internal Operations
 
 ---

@@ -79,12 +79,12 @@ app.MapGet("/.well-known/assetlinks.json", () =>
         ? Path.Combine(webRootPath, ".well-known", "assetlinks.json")
         : Path.Combine(AppContext.BaseDirectory, "wwwroot", ".well-known", "assetlinks.json");
 
-    if (File.Exists(assetLinksPath))
+    if (!File.Exists(assetLinksPath))
     {
-        return Results.File(assetLinksPath, "application/json");
+        throw new FileNotFoundException($"Missing asset links file: {assetLinksPath}");
     }
 
-    return Results.Text("[]", "application/json");
+    return Results.File(assetLinksPath, "application/json");
 });
 
 // Configure the HTTP request pipeline.

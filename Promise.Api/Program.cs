@@ -74,8 +74,17 @@ app.UseStaticFiles();
 
 app.MapGet("/.well-known/assetlinks.json", () =>
 {
-    var assetLinksPath = Path.Combine(app.Environment.WebRootPath ?? string.Empty, ".well-known", "assetlinks.json");
-    return Results.File(assetLinksPath, "application/json");
+    var webRootPath = app.Environment.WebRootPath;
+    var assetLinksPath = !string.IsNullOrWhiteSpace(webRootPath)
+        ? Path.Combine(webRootPath, ".well-known", "assetlinks.json")
+        : Path.Combine(AppContext.BaseDirectory, "wwwroot", ".well-known", "assetlinks.json");
+
+    if (File.Exists(assetLinksPath))
+    {
+        return Results.File(assetLinksPath, "application/json");
+    }
+
+    return Results.Text("[]", "application/json");
 });
 
 // Configure the HTTP request pipeline.

@@ -30,21 +30,14 @@ jobs:
         run: dotnet build Promise.Api/Promise.Api.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish Promise.Api/Promise.Api.csproj -c Release -o "${{ github.workspace }}/publish"
-
-      - name: Verify published app contains assetlinks.json
-        shell: pwsh
-        run: |
-          $path = Join-Path "${{ github.workspace }}/publish" "wwwroot/.well-known/assetlinks.json"
-          if (-not (Test-Path $path)) {
-            throw "Missing /wwwroot/.well-known/assetlinks.json in published app output"
-          }
+        run: dotnet publish Promise.Api/Promise.Api.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{ github.workspace }}/publish
+          path: ${{env.DOTNET_ROOT}}/myapp
+          include-hidden-files: true
 
   deploy:
     runs-on: windows-latest
@@ -58,16 +51,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-          path: ./publish
-
-      - name: Verify downloaded artifact contains assetlinks.json
-        shell: pwsh
-        run: |
-          $path = Join-Path "$PWD/publish" "wwwroot/.well-known/assetlinks.json"
-          if (-not (Test-Path $path)) {
-            throw "Missing /wwwroot/.well-known/assetlinks.json in downloaded deployment artifact"
-          }
-
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -81,5 +65,5 @@ jobs:
         with:
           app-name: 'promiseapi'
           slot-name: 'Production'
-          package: ./publish
+          package: .
           

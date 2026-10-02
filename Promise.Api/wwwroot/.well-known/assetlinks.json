@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.YouCent",
+      "sha256_cert_fingerprints": [
+        "DA:C3:54:E4:20:69:02:DF:07:A2:CC:69:EC:B8:F1:A1:0E:1F:41:1E:3B:DE:0E:53:F9:41:7D:3A:8C:6D:81:75"
+      ]
+    }
+  }
+]

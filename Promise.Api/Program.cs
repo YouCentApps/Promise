@@ -70,6 +70,14 @@ builder.Services.Configure<MailSettings>(mailSettings);
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
+app.MapGet("/.well-known/assetlinks.json", () =>
+{
+    var assetLinksPath = Path.Combine(app.Environment.WebRootPath ?? string.Empty, ".well-known", "assetlinks.json");
+    return Results.File(assetLinksPath, "application/json");
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

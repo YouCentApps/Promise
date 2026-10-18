@@ -34,3 +34,18 @@ SO... I guess we need to get MAC and then remove it all here )))
 ANDROID release creation command
 
 dotnet publish -f net10.0-android -c Release -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=YouCentAppAndroidKey.keystore -p:AndroidSigningKeyAlias=YouCentAppAndroidKey -p:AndroidSigningKeyPass='!f' -p:AndroidSigningStorePass='!f'
+
+
+
+
+=====
+
+WIN
+
+?
+dotnet publish -f net10.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=MSIX -p:WindowsAppSDKSelfContained=true
+
+
+dotnet publish -f net10.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-arm64 -p:WindowsPackageType=MSIX -p:WindowsAppSDKSelfContained=true  
+
+

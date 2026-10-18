@@ -1,24 +1,24 @@
 using Promise.Api;
-using Scalar.AspNetCore;
-using Microsoft.AspNetCore.OpenApi;
+/*using Scalar.AspNetCore;
+using Microsoft.AspNetCore.OpenApi;*/
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Helper method to add request body descriptions
-static Func<Microsoft.OpenApi.OpenApiOperation, OpenApiOperationTransformerContext, CancellationToken, Task> CreateRequestBodyDescriptionTransformer(string description)
+/*static Func<Microsoft.OpenApi.OpenApiOperation, OpenApiOperationTransformerContext, CancellationToken, Task> CreateRequestBodyDescriptionTransformer(string description)
 {
     return (operation, context, ct) =>
     {
         operation.RequestBody?.Description = description;
         return Task.CompletedTask;
     };
-}
+}*/
 
 // Add services to the container.
 // Learn more about configuring OpenAPI with ASP.NET Core and Scalar at https://aka.ms/aspnetcore/openapi
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi(options =>
+/*builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
@@ -60,7 +60,7 @@ builder.Services.AddOpenApi(options =>
         return Task.CompletedTask;
     });
 });
-
+*/
 // Add DbContext to the DI container
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -90,14 +90,14 @@ app.MapGet("/.well-known/assetlinks.json", () =>
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference(options =>
-    {
-        options
-            .WithTitle("YouCent Promise API")
-            .WithTheme(ScalarTheme.Purple)
-            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
-    });
+    //app.MapOpenApi();
+    //app.MapScalarApiReference(options =>
+    //{
+    //    options
+    //        .WithTitle("YouCent Promise API")
+    //        .WithTheme(ScalarTheme.Purple)
+    //        .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    //});
 }
 else
 {
@@ -123,8 +123,8 @@ app.MapPost("/signin", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("SignIn")
 .WithSummary("Sign in user")
-.WithDescription("Authenticates a user and returns a JWT token.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials for authentication"));
+.WithDescription("Authenticates a user and returns a JWT token.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials for authentication"));
 
 // SignUp endpoint
 app.MapPost("/signup", async (HttpContext context) =>
@@ -134,8 +134,8 @@ app.MapPost("/signup", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("SignUp")
 .WithSummary("Register new user")
-.WithDescription("Creates a new user account.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User information for account registration"));
+.WithDescription("Creates a new user account.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User information for account registration"));
 
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
@@ -145,8 +145,8 @@ app.MapPost("/userinfo", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("GetUserInfo")
 .WithSummary("Get user information")
-.WithDescription("Retrieves user information including balance and promise limit. Requires authentication.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials to retrieve account information"));
+.WithDescription("Retrieves user information including balance and promise limit. Requires authentication.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials to retrieve account information"));
 
 // DataUpdate endpoint
 app.MapPut("/dataupdate", async (HttpContext context) =>
@@ -156,8 +156,8 @@ app.MapPut("/dataupdate", async (HttpContext context) =>
 .Accepts<UserData>("application/json")
 .WithName("UpdateUserData")
 .WithSummary("Update user personal data")
-.WithDescription("Updates user's personal information.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Updated user personal information data"));
+.WithDescription("Updates user's personal information.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Updated user personal information data"));
 
 // DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
@@ -167,8 +167,8 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("DeleteUser")
 .WithSummary("Delete user account")
-.WithDescription("Permanently deletes a user account. Requires authentication.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials for account deletion"));
+.WithDescription("Permanently deletes a user account. Requires authentication.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials for account deletion"));
 
 // UpdatePassword endpoint
 app.MapPut("/updatepassword", async (HttpContext context) =>
@@ -178,8 +178,8 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
 .Accepts<UserUpdate>("application/json")
 .WithName("UpdatePassword")
 .WithSummary("Update user password")
-.WithDescription("Changes the user's password. Requires authentication.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and new password information"));
+.WithDescription("Changes the user's password. Requires authentication.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and new password information"));
 
 // SendPromises endpoint
 app.MapPost("/sendpromises", async (HttpContext context) =>
@@ -189,8 +189,8 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
 .Accepts<UserTransaction>("application/json")
 .WithName("SendPromises")
 .WithSummary("Send promises to another user")
-.WithDescription("Transfers YouCent Promises (YCP) from one user to another. Requires authentication.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Transaction details including recipient and amount"));
+.WithDescription("Transfers YouCent Promises (YCP) from one user to another. Requires authentication.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Transaction details including recipient and amount"));
 
 // GetTransactions endpoint
 app.MapPost("/gettransactions", async (HttpContext context) =>
@@ -200,8 +200,8 @@ app.MapPost("/gettransactions", async (HttpContext context) =>
 .Accepts<TransactionsHistoryInfo>("application/json")
 .WithName("GetTransactions")
 .WithSummary("Get transaction history")
-.WithDescription("Retrieves the user's transaction history. Requires authentication.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and transaction history query parameters"));
+.WithDescription("Retrieves the user's transaction history. Requires authentication.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and transaction history query parameters"));
 
 // RestoreAccessUseSecret endpoint
 app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
@@ -211,8 +211,8 @@ app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithSecret")
 .WithSummary("Restore access using secret word")
-.WithDescription("Restores account access by verifying the user's secret word.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User identifier and secret word for account recovery"));
+.WithDescription("Restores account access by verifying the user's secret word.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User identifier and secret word for account recovery"));
 
 // RestoreAccessUseEmail endpoint
 app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
@@ -222,8 +222,8 @@ app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithEmail")
 .WithSummary("Restore access using email")
-.WithDescription("Restores account access by sending a verification email.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User email address for account recovery"));
+.WithDescription("Restores account access by sending a verification email.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User email address for account recovery"));
 
 // RestoreAccessUseTel endpoint
 app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
@@ -233,8 +233,8 @@ app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json")
 .WithName("RestoreAccessWithPhone")
 .WithSummary("Restore access using phone number")
-.WithDescription("Restores account access by verifying the user's phone number.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User phone number for account recovery"));
+.WithDescription("Restores account access by verifying the user's phone number.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User phone number for account recovery"));
 
 // GetUserCurrency endpoint
 app.MapPost("/getusercurrency", async (HttpContext context) =>
@@ -244,8 +244,8 @@ app.MapPost("/getusercurrency", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("GetUserCurrency")
 .WithSummary("Get user's currency preference")
-.WithDescription("Retrieves the user's selected currency and exchange rate.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials to retrieve currency information"));
+.WithDescription("Retrieves the user's selected currency and exchange rate.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials to retrieve currency information"));
 
 // UpdateCurrencyPreference endpoint
 app.MapPut("/updatecurrencypreference", async (HttpContext context) =>
@@ -255,8 +255,8 @@ app.MapPut("/updatecurrencypreference", async (HttpContext context) =>
 .Accepts<CurrencyPreferenceUpdate>("application/json")
 .WithName("UpdateCurrencyPreference")
 .WithSummary("Update user's currency preference")
-.WithDescription("Changes the user's preferred currency for display.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and new currency ID"));
+.WithDescription("Changes the user's preferred currency for display.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and new currency ID"));
 
 // ===== MERCHANT ENDPOINTS =====
 
@@ -268,8 +268,8 @@ app.MapPost("/merchant/register", async (HttpContext context) =>
 .Accepts<MerchantRegisterRequest>("application/json")
 .WithName("MerchantRegister")
 .WithSummary("Register as a merchant")
-.WithDescription("Registers the authenticated user as a merchant and returns API credentials.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and merchant info"));
+.WithDescription("Registers the authenticated user as a merchant and returns API credentials.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and merchant info"));
 
 // Create Payment Request
 app.MapPost("/merchant/payment-request", async (HttpContext context) =>
@@ -279,8 +279,8 @@ app.MapPost("/merchant/payment-request", async (HttpContext context) =>
 .Accepts<CreatePaymentRequestInput>("application/json")
 .WithName("MerchantCreatePaymentRequest")
 .WithSummary("Create a payment request")
-.WithDescription("Creates a one-time or subscription payment request. Returns a token and payment URL.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials and payment request details"));
+.WithDescription("Creates a one-time or subscription payment request. Returns a token and payment URL.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials and payment request details"));
 
 // Get Payment Request Info (public, no auth)
 app.MapGet("/pay/{token}", async (HttpContext context, string token) =>
@@ -299,8 +299,8 @@ app.MapPost("/pay/{token}", async (HttpContext context, string token) =>
 .Accepts<PayByTokenRequest>("application/json")
 .WithName("PayByToken")
 .WithSummary("Pay a payment request")
-.WithDescription("Executes payment for a one-time request or sets up a subscription. Requires authentication.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and payment token"));
+.WithDescription("Executes payment for a one-time request or sets up a subscription. Requires authentication.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials and payment token"));
 
 // Charge Subscription
 app.MapPost("/merchant/subscription/charge", async (HttpContext context) =>
@@ -310,8 +310,8 @@ app.MapPost("/merchant/subscription/charge", async (HttpContext context) =>
 .Accepts<SubscriptionChargeRequest>("application/json")
 .WithName("MerchantChargeSubscription")
 .WithSummary("Charge a subscription")
-.WithDescription("Charges the next interval on an active subscription. Merchant API auth required.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials and subscription ID"));
+.WithDescription("Charges the next interval on an active subscription. Merchant API auth required.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials and subscription ID"));
 
 // Refund
 app.MapPost("/merchant/refund", async (HttpContext context) =>
@@ -321,8 +321,8 @@ app.MapPost("/merchant/refund", async (HttpContext context) =>
 .Accepts<MerchantRefundRequest>("application/json")
 .WithName("MerchantRefund")
 .WithSummary("Refund a transaction")
-.WithDescription("Refunds a charge transaction. Merchant API auth required.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials and transaction ID to refund"));
+.WithDescription("Refunds a charge transaction. Merchant API auth required.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials and transaction ID to refund"));
 
 // Merchant Query: Payment Requests
 app.MapPost("/merchant/payment-requests", async (HttpContext context) =>
@@ -332,8 +332,8 @@ app.MapPost("/merchant/payment-requests", async (HttpContext context) =>
 .Accepts<MerchantApiAuth>("application/json")
 .WithName("MerchantGetPaymentRequests")
 .WithSummary("List merchant payment requests")
-.WithDescription("Returns the merchant's payment requests. Merchant API auth required.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials"));
+.WithDescription("Returns the merchant's payment requests. Merchant API auth required.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials"));
 
 // Merchant Query: Subscriptions
 app.MapPost("/merchant/subscriptions", async (HttpContext context) =>
@@ -343,8 +343,8 @@ app.MapPost("/merchant/subscriptions", async (HttpContext context) =>
 .Accepts<MerchantApiAuth>("application/json")
 .WithName("MerchantGetSubscriptions")
 .WithSummary("List merchant subscriptions")
-.WithDescription("Returns the merchant's subscriptions. Merchant API auth required.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials"));
+.WithDescription("Returns the merchant's subscriptions. Merchant API auth required.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials"));
 
 // Merchant Query: Transactions
 app.MapPost("/merchant/transactions", async (HttpContext context) =>
@@ -354,8 +354,8 @@ app.MapPost("/merchant/transactions", async (HttpContext context) =>
 .Accepts<MerchantApiAuth>("application/json")
 .WithName("MerchantGetTransactions")
 .WithSummary("List merchant transactions")
-.WithDescription("Returns the merchant's transaction history. Merchant API auth required.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials"));
+.WithDescription("Returns the merchant's transaction history. Merchant API auth required.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("Merchant API credentials"));
 
 // User Subscriptions: List
 app.MapPost("/user/subscriptions", async (HttpContext context) =>
@@ -365,8 +365,8 @@ app.MapPost("/user/subscriptions", async (HttpContext context) =>
 .Accepts<User>("application/json")
 .WithName("UserGetSubscriptions")
 .WithSummary("List user subscriptions")
-.WithDescription("Returns the user's active subscriptions. Requires authentication.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials"));
+.WithDescription("Returns the user's active subscriptions. Requires authentication.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials"));
 
 // User Subscriptions: Cancel
 app.MapDelete("/user/subscriptions/{subscriptionId}", async (HttpContext context, long subscriptionId) =>
@@ -376,8 +376,8 @@ app.MapDelete("/user/subscriptions/{subscriptionId}", async (HttpContext context
 .Accepts<User>("application/json")
 .WithName("UserCancelSubscription")
 .WithSummary("Cancel a subscription")
-.WithDescription("Cancels an active subscription. Requires authentication.")
-.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials"));
+.WithDescription("Cancels an active subscription. Requires authentication.");
+//.AddOpenApiOperationTransformer(CreateRequestBodyDescriptionTransformer("User credentials"));
 
 // RUN!
 app.Run();
